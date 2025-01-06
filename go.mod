@@ -5,6 +5,8 @@ go 1.23
 require (
 	github.com/cloudwego/hertz v0.9.4
 	github.com/go-sql-driver/mysql v1.8.1
+	github.com/golang-jwt/jwt/v4 v4.5.1
+	golang.org/x/crypto v0.31.0
 )
 
 require (
@@ -24,6 +26,6 @@ require (
 	github.com/tidwall/pretty v1.2.0 // indirect
 	github.com/twitchyliquid64/golang-asm v0.15.1 // indirect
 	golang.org/x/arch v0.0.0-20210923205945-b76863e36670 // indirect
-	golang.org/x/sys v0.24.0 // indirect
+	golang.org/x/sys v0.28.0 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 )

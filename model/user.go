@@ -16,4 +16,14 @@ type User struct {
 	Bio         string    `json:"bio"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
+	Role        string    `json:"role"`
+}
+
+type LoginUser struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+type JWTKey struct {
+	Key string `json:"key"`
 }

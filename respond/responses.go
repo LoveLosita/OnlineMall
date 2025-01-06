@@ -11,6 +11,7 @@ type FinalResponse struct { //最终响应结构体
 	Data   interface{} `json:"data"`
 }
 
+// 实现error接口
 func (r Response) Error() string { // 实现 error 接口
 	return r.Info
 }
@@ -36,9 +37,9 @@ var (
 		Info:   "success",
 	}
 
-	WrongID = Response{ //用户ID错误
+	WrongName = Response{ //用户ID错误
 		Status: "40001",
-		Info:   "wrong userid",
+		Info:   "wrong username",
 	}
 
 	WrongPwd = Response{ //密码错误
@@ -46,9 +47,9 @@ var (
 		Info:   "wrong password",
 	}
 
-	InvalidID = Response{ //用户ID无效
+	InvalidName = Response{ //用户ID无效
 		Status: "40003",
-		Info:   "the userid already exists",
+		Info:   "the username already exists",
 	}
 
 	MissingParam = Response{ //缺少参数
@@ -59,5 +60,17 @@ var (
 	WrongParamType = Response{ //参数错误
 		Status: "40005",
 		Info:   "wrong param type",
+	}
+	ParamTooLong = Response{ //参数过长
+		Status: "40006",
+		Info:   "param too long",
+	}
+	WrongUsernameOrPwd = Response{ //用户名或密码错误
+		Status: "40007",
+		Info:   "wrong username or password",
+	}
+	WrongGender = Response{ //性别错误
+		Status: "40008",
+		Info:   "wrong gender",
 	}
 )
