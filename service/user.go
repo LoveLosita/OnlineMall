@@ -64,3 +64,48 @@ func UserLogin(user model.LoginUser) (bool, string, error) {
 	}
 	return true, jwtkey, nil
 }
+
+func ChangeUserPwdOrName(handlerID int, user model.ChangePasswordAndUsernameUser) error {
+	if user.OldPassword == "" { //检查是否有空字段
+		return respond.MissingParam //返回参数过少的错误
+	}
+	//先通过传入的handlerID获取用户名
+	name, err := dao.GetUserName(handlerID)
+	if err != nil {
+		return err
+	}
+	//首先检验旧密码是否正确
+	hashedPwd, err := dao.GetUserHashedPassword(name) //调用dao层的方法
+	if err != nil {
+		return err
+	}
+	result, err := utils.CompareHashPwdAndPwd(hashedPwd, user.OldPassword) //比较密码是否匹配
+	if err != nil {                                                        //其他错误
+		return err
+	} else if !result { //密码不匹配
+		return respond.WrongPwd
+	}
+	//如果有的信息为空，说明不修改，需要调取原来的信息来填上
+	if user.NewPassword == "" {
+		user.NewPassword = hashedPwd
+	} else { //非空，给密码加密
+		hashedPassword, err := utils.HashPassword(user.NewPassword)
+		if err != nil {
+			return err
+		}
+		user.NewPassword = hashedPassword
+	}
+	if user.NewUsername == "" {
+		oldUser, err := dao.GetUserInfoByID(handlerID)
+		if err != nil {
+			return err
+		}
+		user.NewUsername = oldUser.Username
+	}
+	//接下来才开始填入信息
+	err = dao.ChangeUserPasswordOrName(handlerID, user.NewPassword, user.NewUsername)
+	if err != nil {
+		return err
+	}
+	return nil
+}

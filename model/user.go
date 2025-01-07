@@ -27,3 +27,9 @@ type LoginUser struct {
 type JWTKey struct {
 	Key string `json:"key"`
 }
+
+type ChangePasswordAndUsernameUser struct {
+	OldPassword string `json:"old_password"`
+	NewUsername string `json:"new_username"`
+	NewPassword string `json:"new_password"`
+}

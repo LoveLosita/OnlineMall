@@ -41,7 +41,8 @@ func UserLogin(ctx context.Context, c *app.RequestContext) {
 	result, jwtKey, err := service.UserLogin(user)
 	if err != nil {
 		switch {
-		case errors.Is(err, respond.WrongName), errors.Is(err, respond.WrongPwd), errors.Is(err, respond.WrongGender): //如果是无效ID或者密码错误或者性别错误
+		case errors.Is(err, respond.WrongName), errors.Is(err, respond.WrongPwd),
+			errors.Is(err, respond.WrongGender): //如果是无效ID或者密码错误或者性别错误
 			c.JSON(consts.StatusBadRequest, respond.WrongUsernameOrPwd)
 			return
 		default:
@@ -56,4 +57,26 @@ func UserLogin(ctx context.Context, c *app.RequestContext) {
 	} else { //密码错误
 		c.JSON(consts.StatusBadRequest, respond.WrongPwd)
 	}
+}
+
+func ChangeUserPasswordOrName(ctx context.Context, c *app.RequestContext) {
+	handlerID := c.GetFloat64("user_id")
+	var user model.ChangePasswordAndUsernameUser
+	err := c.BindJSON(&user)
+	if err != nil {
+		c.JSON(consts.StatusBadRequest, respond.WrongParamType)
+		return
+	}
+	err = service.ChangeUserPwdOrName(int(handlerID), user)
+	if err != nil {
+		switch {
+		case errors.Is(err, respond.WrongPwd), errors.Is(err, respond.WrongName), errors.Is(err, respond.MissingParam): //如果是密码错误或者用户名错误或者缺少参数的错误
+			c.JSON(consts.StatusUnauthorized, err)
+			return
+		default:
+			c.JSON(consts.StatusInternalServerError, respond.InternalError(err))
+			return
+		}
+	}
+	c.JSON(consts.StatusOK, respond.Ok)
 }

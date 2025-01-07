@@ -6,7 +6,7 @@ import (
 	"log"
 )
 
-func UserRegister(user model.User) error {
+func UserRegister(user model.User) error { //注册用户
 	query := `
 		INSERT INTO users (
 			username, email, password, full_name, phone_number, nickname, qq, avatar, gender, bio) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -20,20 +20,20 @@ func UserRegister(user model.User) error {
 	return nil
 }
 
-func IfUsernameExists(name string) (bool, error) {
+func IfUsernameExists(name string) (bool, error) { //检查用户名是否存在
 	query := "SELECT id FROM users WHERE username=?"
 	rows, err := Db.Query(query, name)
 	if err != nil {
 		return true, err
 	}
-	if rows.Next() {
+	if rows.Next() { //如果有这个用户
 		return true, nil
 	} else {
 		return false, nil
 	}
 }
 
-func GetUserHashedPassword(username string) (string, error) {
+func GetUserHashedPassword(username string) (string, error) { //获取用户密码
 	var password string
 	query := "SELECT password FROM users WHERE username=?"
 	rows, err := Db.Query(query, username)
@@ -50,7 +50,7 @@ func GetUserHashedPassword(username string) (string, error) {
 	return "", respond.WrongName //找不到用户
 }
 
-func GetUserID(username string) (int, error) {
+func GetUserID(username string) (int, error) { //获取用户id
 	var id int
 	query := "SELECT id FROM users WHERE username=?"
 	rows, err := Db.Query(query, username)
@@ -67,7 +67,24 @@ func GetUserID(username string) (int, error) {
 	return 0, respond.WrongName //找不到用户
 }
 
-func GetUserInfoByID(id int) (model.User, error) {
+func GetUserName(id int) (string, error) {
+	var userName string
+	query := "SELECT username FROM users WHERE id=?"
+	rows, err := Db.Query(query, id)
+	if err != nil {
+		return "", err
+	}
+	if rows.Next() {
+		err = rows.Scan(&userName)
+		if err != nil {
+			return "", err
+		}
+		return userName, nil
+	}
+	return "", respond.WrongUserID
+}
+
+func GetUserInfoByID(id int) (model.User, error) { //通过id获取用户信息
 	var user model.User
 	query := "SELECT id, username, email, full_name, phone_number, nickname, qq, avatar,gender,bio,role FROM users WHERE id=?"
 	rows, err := Db.Query(query, id)
@@ -83,4 +100,13 @@ func GetUserInfoByID(id int) (model.User, error) {
 		return user, nil
 	}
 	return user, respond.WrongUserID //找不到用户
+}
+
+func ChangeUserPasswordOrName(id int, password, name string) error { //修改用户密码或用户名
+	query := "UPDATE users SET password=?, username=? WHERE id=?"
+	_, err := Db.Exec(query, password, name, id)
+	if err != nil {
+		return err
+	}
+	return nil
 }
