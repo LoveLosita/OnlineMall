@@ -37,7 +37,7 @@ var (
 		Info:   "success",
 	}
 
-	WrongName = Response{ //用户ID错误
+	WrongName = Response{ //用户名错误
 		Status: "40001",
 		Info:   "wrong username",
 	}
@@ -47,7 +47,7 @@ var (
 		Info:   "wrong password",
 	}
 
-	InvalidName = Response{ //用户ID无效
+	InvalidName = Response{ //用户名无效
 		Status: "40003",
 		Info:   "the username already exists",
 	}
@@ -72,5 +72,33 @@ var (
 	WrongGender = Response{ //性别错误
 		Status: "40008",
 		Info:   "wrong gender",
+	}
+	MissingToken = Response{ //缺少token
+		Status: "40009",
+		Info:   "missing token",
+	}
+	InvalidTokenSingingMethod = Response{ //jwt token签名方法无效
+		Status: "40010",
+		Info:   "invalid signing method",
+	}
+	InvalidToken = Response{ //无效token
+		Status: "40011",
+		Info:   "invalid token",
+	}
+	InvalidClaims = Response{ //无效声明
+		Status: "40012",
+		Info:   "invalid claims",
+	}
+	WrongUserID = Response{ //ID错误
+		Status: "40013",
+		Info:   "wrong userid",
+	}
+	ErrUnauthorized = Response{ //未授权
+		Status: "40014",
+		Info:   "unauthorized",
+	}
+	ErrCategoryNotExists = Response{ //分类不存在
+		Status: "40015",
+		Info:   "category not exists",
 	}
 )

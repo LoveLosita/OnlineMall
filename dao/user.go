@@ -66,3 +66,21 @@ func GetUserID(username string) (int, error) {
 	}
 	return 0, respond.WrongName //找不到用户
 }
+
+func GetUserInfoByID(id int) (model.User, error) {
+	var user model.User
+	query := "SELECT id, username, email, full_name, phone_number, nickname, qq, avatar,gender,bio,role FROM users WHERE id=?"
+	rows, err := Db.Query(query, id)
+	if err != nil {
+		return user, err
+	}
+	if rows.Next() { //如果有这个用户
+		err = rows.Scan(&user.ID, &user.Username, &user.Email, &user.FullName, &user.PhoneNumber, &user.Nickname, &user.QQ,
+			&user.Avatar, &user.Gender, &user.Bio, &user.Role)
+		if err != nil {
+			return user, err
+		}
+		return user, nil
+	}
+	return user, respond.WrongUserID //找不到用户
+}
