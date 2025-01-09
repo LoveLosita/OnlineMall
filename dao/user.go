@@ -110,3 +110,12 @@ func ChangeUserPasswordOrName(id int, password, name string) error { //修改用
 	}
 	return nil
 }
+
+func UpdateUserInfo(id int, user model.ChangeInfoUser) error { //更新用户信息
+	query := "UPDATE users SET email=?, full_name=?, phone_number=?, nickname=?, qq=?,avatar=?,gender=?,bio=? WHERE id=?"
+	_, err := Db.Exec(query, user.Email, user.FullName, user.PhoneNumber, user.Nickname, user.QQ, user.Avatar, user.Gender, user.Bio, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}

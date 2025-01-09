@@ -93,12 +93,20 @@ var (
 		Status: "40013",
 		Info:   "wrong userid",
 	}
-	ErrUnauthorized = Response{ //未授权
+	ErrUnauthorized = Response{ //未授权，没有权限
 		Status: "40014",
 		Info:   "unauthorized",
 	}
 	ErrCategoryNotExists = Response{ //分类不存在
 		Status: "40015",
 		Info:   "category not exists",
+	}
+	ErrCategoryNameExists = Response{ //分类名已存在
+		Status: "40016",
+		Info:   "category name exists",
+	}
+	ErrProductNotExists = Response{ //商品不存在
+		Status: "40017",
+		Info:   "product not exists",
 	}
 )

@@ -1,6 +1,7 @@
 package service
 
 import (
+	"OnlineMall/auth"
 	"OnlineMall/dao"
 	"OnlineMall/model"
 	"OnlineMall/respond"
@@ -17,7 +18,7 @@ func UserRegister(user model.User) error {
 	// 检查字段长度是否超过90%
 	if len(user.Username) > 45 || len(user.Email) > 90 || len(user.Password) > 229 ||
 		len(user.FullName) > 90 || len(user.PhoneNumber) > 18 || len(user.Nickname) > 45 ||
-		len(user.QQ) > 18 || len(user.Avatar) > 229 {
+		len(user.QQ) > 18 || len(user.Avatar) > 229 || len(user.Bio) > 1000 {
 		return respond.ParamTooLong
 	}
 	//检查性别是否合法
@@ -104,6 +105,67 @@ func ChangeUserPwdOrName(handlerID int, user model.ChangePasswordAndUsernameUser
 	}
 	//接下来才开始填入信息
 	err = dao.ChangeUserPasswordOrName(handlerID, user.NewPassword, user.NewUsername)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func ChangeUserInfo(handlerID int, targetID int, user model.ChangeInfoUser) error {
+	//1.检查更改方式：到底是用户自己更改自己的信息还是管理员更改用户信息
+	if handlerID != targetID { //可能是管理员更改用户信息
+		//检查管理员权限
+		handlerRole, err := auth.CheckPermission(handlerID)
+		if err != nil {
+			return err
+		}
+		if handlerRole != "admin" {
+			return respond.ErrUnauthorized
+		}
+	}
+	//2.检查字段是否合法
+	//2.1.检查字段长度是否超过90%
+	if len(user.Email) > 90 || len(user.FullName) > 90 || len(user.PhoneNumber) > 18 || len(user.Nickname) > 45 ||
+		len(user.QQ) > 18 || len(user.Avatar) > 229 || len(user.Bio) > 1000 {
+		return respond.ParamTooLong
+	}
+	//2.2.如果填写了，检查性别是否合法
+	if user.Gender != "" {
+		if user.Gender != "male" && user.Gender != "female" && user.Gender != "other" {
+			return respond.WrongGender
+		}
+	}
+	//3.获取用户信息，判断是否已经填写对应信息，实现选择性更新
+	oldUser, err := dao.GetUserInfoByID(targetID) //同时可以检查用户是否存在
+	if err != nil {
+		return err
+	}
+	if user.Email == "" {
+		user.Email = oldUser.Email
+	}
+	if user.FullName == "" {
+		user.FullName = oldUser.FullName
+	}
+	if user.PhoneNumber == "" {
+		user.PhoneNumber = oldUser.PhoneNumber
+	}
+	if user.Nickname == "" {
+		user.Nickname = oldUser.Nickname
+	}
+	if user.QQ == "" {
+		user.QQ = oldUser.QQ
+	}
+	if user.Avatar == "" {
+		user.Avatar = oldUser.Avatar
+	}
+	if user.Gender == "" {
+		user.Gender = oldUser.Gender
+	}
+	if user.Bio == "" {
+		user.Bio = oldUser.Bio
+	}
+	//4.更新用户信息
+	err = dao.UpdateUserInfo(targetID, user)
 	if err != nil {
 		return err
 	}

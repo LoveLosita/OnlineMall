@@ -8,6 +8,7 @@ import (
 	"errors"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
+	"strconv"
 )
 
 func UserRegister(ctx context.Context, c *app.RequestContext) {
@@ -78,5 +79,33 @@ func ChangeUserPasswordOrName(ctx context.Context, c *app.RequestContext) {
 			return
 		}
 	}
+	c.JSON(consts.StatusOK, respond.Ok)
+}
+
+func ChangeUserInfo(ctx context.Context, c *app.RequestContext) {
+	//1.从请求中获取handlerID和targetID
+	handlerID := c.GetFloat64("user_id")
+	targetID := c.Query("id")
+	intID, err := strconv.ParseInt(targetID, 10, 64)
+	var user model.ChangeInfoUser
+	err = c.BindJSON(&user)
+	if err != nil {
+		c.JSON(consts.StatusBadRequest, respond.WrongParamType)
+		return
+	}
+	//2.调用service层函数
+	err = service.ChangeUserInfo(int(handlerID), int(intID), user)
+	if err != nil {
+		switch {
+		case errors.Is(err, respond.WrongGender), errors.Is(err, respond.WrongName), errors.Is(err, respond.MissingParam),
+			errors.Is(err, respond.ParamTooLong), errors.Is(err, respond.ErrUnauthorized): //如果是性别错误或者用户名错误或者缺少参数或者参数过长的错误
+			c.JSON(consts.StatusBadRequest, err)
+			return
+		default:
+			c.JSON(consts.StatusInternalServerError, respond.InternalError(err))
+			return
+		}
+	}
+	//3.返回成功
 	c.JSON(consts.StatusOK, respond.Ok)
 }
