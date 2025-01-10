@@ -39,7 +39,7 @@ func UserLogin(ctx context.Context, c *app.RequestContext) {
 		c.JSON(consts.StatusBadRequest, respond.WrongParamType)
 		return
 	}
-	result, jwtKey, err := service.UserLogin(user)
+	result, tokens, err := service.UserLogin(user)
 	if err != nil {
 		switch {
 		case errors.Is(err, respond.WrongName), errors.Is(err, respond.WrongPwd),
@@ -51,10 +51,8 @@ func UserLogin(ctx context.Context, c *app.RequestContext) {
 			return
 		}
 	}
-	var jwt model.JWTKey
-	jwt.Key = jwtKey
 	if result { //登录成功
-		c.JSON(consts.StatusOK, respond.Respond(respond.Ok, jwt))
+		c.JSON(consts.StatusOK, respond.Respond(respond.Ok, tokens))
 	} else { //密码错误
 		c.JSON(consts.StatusBadRequest, respond.WrongPwd)
 	}

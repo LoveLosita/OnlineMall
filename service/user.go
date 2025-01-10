@@ -44,26 +44,27 @@ func UserRegister(user model.User) error {
 	return nil
 }
 
-func UserLogin(user model.LoginUser) (bool, string, error) {
+func UserLogin(user model.LoginUser) (bool, model.Tokens, error) {
+	var tokens model.Tokens
 	hashedPwd, err := dao.GetUserHashedPassword(user.Username) //调用dao层的方法
 	if err != nil {
-		return false, "", err
+		return false, model.Tokens{}, err
 	}
 	result, err := utils.CompareHashPwdAndPwd(hashedPwd, user.Password) //比较密码是否匹配
 	if err != nil {                                                     //其他错误
-		return false, "", err
+		return false, tokens, err
 	} else if !result { //密码不匹配
-		return false, "", respond.WrongPwd
+		return false, model.Tokens{}, respond.WrongPwd
 	}
 	id, err := dao.GetUserID(user.Username) //获取用户id
 	if err != nil {
-		return false, "", err
+		return false, model.Tokens{}, err
 	}
-	jwtkey, err := auth.GenerateJWT(id) //生成jwt key
-	if err != nil {                     //其他错误
-		return false, "", err
+	tokens.AccessToken, tokens.RefreshToken, err = auth.GenerateTokens(id) //生成jwt key
+	if err != nil {                                                        //其他错误
+		return false, model.Tokens{}, err
 	}
-	return true, jwtkey, nil
+	return true, tokens, nil
 }
 
 func ChangeUserPwdOrName(handlerID int, user model.ChangePasswordAndUsernameUser) error {

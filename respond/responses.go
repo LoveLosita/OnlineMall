@@ -131,4 +131,8 @@ var (
 		Status: "40019",
 		Info:   "product list is empty",
 	}
+	InvalidRefreshToken = Response{ //刷新令牌无效
+		Status: "40020",
+		Info:   "invalid refresh token",
+	}
 )
