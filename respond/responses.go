@@ -61,52 +61,74 @@ var (
 		Status: "40005",
 		Info:   "wrong param type",
 	}
+
 	ParamTooLong = Response{ //参数过长
 		Status: "40006",
 		Info:   "param too long",
 	}
+
 	WrongUsernameOrPwd = Response{ //用户名或密码错误
 		Status: "40007",
 		Info:   "wrong username or password",
 	}
+
 	WrongGender = Response{ //性别错误
 		Status: "40008",
 		Info:   "wrong gender",
 	}
+
 	MissingToken = Response{ //缺少token
 		Status: "40009",
 		Info:   "missing token",
 	}
+
 	InvalidTokenSingingMethod = Response{ //jwt token签名方法无效
 		Status: "40010",
 		Info:   "invalid signing method",
 	}
+
 	InvalidToken = Response{ //无效token
 		Status: "40011",
 		Info:   "invalid token",
 	}
+
 	InvalidClaims = Response{ //无效声明
 		Status: "40012",
 		Info:   "invalid claims",
 	}
-	WrongUserID = Response{ //ID错误
+
+	WrongUserID = Response{ //用户ID错误
 		Status: "40013",
 		Info:   "wrong userid",
 	}
+
 	ErrUnauthorized = Response{ //未授权，没有权限
 		Status: "40014",
 		Info:   "unauthorized",
 	}
+
 	ErrCategoryNotExists = Response{ //分类不存在
 		Status: "40015",
 		Info:   "category not exists",
 	}
+
 	ErrCategoryNameExists = Response{ //分类名已存在
 		Status: "40016",
 		Info:   "category name exists",
 	}
+
 	ErrProductNotExists = Response{ //商品不存在
 		Status: "40017",
 		Info:   "product not exists",
+	}
+
+	CantFindProduct = Response{ //找不到商品
+		Status: "40018",
+		Info:   "can't find product",
+	}
+
+	EmptyProductList = Response{ //商品列表为空
+		Status: "40019",
+		Info:   "product list is empty",
 	}
 )

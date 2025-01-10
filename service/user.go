@@ -59,8 +59,8 @@ func UserLogin(user model.LoginUser) (bool, string, error) {
 	if err != nil {
 		return false, "", err
 	}
-	jwtkey, err := utils.GenerateJWT(id) //生成jwt key
-	if err != nil {                      //其他错误
+	jwtkey, err := auth.GenerateJWT(id) //生成jwt key
+	if err != nil {                     //其他错误
 		return false, "", err
 	}
 	return true, jwtkey, nil

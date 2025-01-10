@@ -8,11 +8,13 @@ import (
 
 func RegisterRouters() {
 	h := server.Default()
+
 	userGroup := h.Group("/user")
 	merchantGroup := h.Group("/merchant")
 	adminGroup := h.Group("/admin")
 
 	//分组依据为使用对应功能需要的最低权限
+	h.GET("show_product", api.GetProductsInManyWays)
 
 	userGroup.PUT("/register", api.UserRegister)
 	userGroup.POST("/login", api.UserLogin)

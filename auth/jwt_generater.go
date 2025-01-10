@@ -1,4 +1,4 @@
-package utils
+package auth
 
 import (
 	"github.com/golang-jwt/jwt/v4"
@@ -13,7 +13,7 @@ func GenerateJWT(userID int) (string, error) {
 	//fmt.Println(string(jwtSecret))//测试用
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id": userID,                                // 获取用户id
-		"exp":     time.Now().Add(24 * time.Hour).Unix(), // 设置 Token 过期时间
+		"exp":     time.Now().Add(24 * time.Hour).Unix(), // 设置 Token 过期时间为 24 小时
 	})
 
 	// 使用密钥签名 Token

@@ -61,7 +61,7 @@ func ChangeProduct(id int, product model.AddProduct, handlerID int) error {
 		return respond.ParamTooLong
 	}
 	//3.获取商品信息，并且判断是否已经填写对应信息，实现选择性更新
-	oldProduct, err := dao.GetProductInfo(id) //同时可以检查商品是否存在
+	oldProduct, err := dao.GetProductInfoByID(id) //同时可以检查商品是否存在
 	if err != nil {
 		return err
 	}
@@ -92,4 +92,22 @@ func ChangeProduct(id int, product model.AddProduct, handlerID int) error {
 		product.ProductImage = oldProduct.ProductImage
 	}
 	return dao.UpdateProduct(id, product) //调用dao层函数
+}
+
+func ShowProductInManyWays(productID int, keyword string, categoryID int) ([]model.ShowProduct, error) {
+	//优先级：商品id>关键字>分类id>全部商品
+	if productID != 0 { //如果有商品id
+		product, err := dao.GetProductInfoByID(productID)
+		if err != nil {
+			return nil, err
+		}
+		return []model.ShowProduct{product}, nil
+	}
+	if keyword != "" { //如果有关键字
+		return dao.GetProductInfoByKeyWord(keyword)
+	}
+	if categoryID != 0 { //如果有分类id
+		return dao.ShowACategoryProducts(categoryID)
+	}
+	return dao.ShowAllProducts() //返回所有商品
 }

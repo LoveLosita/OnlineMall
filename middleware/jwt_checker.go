@@ -1,15 +1,15 @@
 package middleware
 
 import (
+	"OnlineMall/auth"
 	"OnlineMall/respond"
-	"OnlineMall/utils"
 	"context"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 	"github.com/golang-jwt/jwt/v4"
 )
 
-var jwtSecret = utils.JwtSecret
+var jwtSecret = auth.JwtSecret
 
 // JWTAuthMiddleware 中间件
 func JWTAuthMiddleware() app.HandlerFunc {
