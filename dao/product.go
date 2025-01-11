@@ -23,7 +23,7 @@ func UpdateProduct(id int, product model.AddProduct) error {
 	return nil
 }
 
-func GetProductInfoByID(productID int) (model.ShowProduct, error) {
+func GetProductInfoByID(productID int) (model.ShowProduct, error) { //计入热度计算
 	query := "SELECT * FROM products WHERE id=?"
 	rows, err := Db.Query(query, productID)
 	if err != nil {
@@ -32,7 +32,13 @@ func GetProductInfoByID(productID int) (model.ShowProduct, error) {
 	var product model.ShowProduct
 	for rows.Next() { //如果有这个商品
 		err = rows.Scan(&product.ID, &product.Name, &product.Description, &product.Price, &product.Stock, &product.CategoryID,
-			&product.ProductImage, &product.Popularity, &product.CreatedAt, &product.UpdatedAt)
+			&product.Popularity, &product.AveRating, &product.ProductImage, &product.CreatedAt, &product.UpdatedAt)
+		if err != nil {
+			return model.ShowProduct{}, err
+		}
+		//更新热度
+		query = "UPDATE products SET popularity=popularity+1 WHERE id=?"
+		_, err = Db.Exec(query, productID)
 		if err != nil {
 			return model.ShowProduct{}, err
 		}
@@ -51,7 +57,7 @@ func GetProductInfoByKeyWord(keyword string) ([]model.ShowProduct, error) {
 	for rows.Next() {
 		var product model.ShowProduct
 		err = rows.Scan(&product.ID, &product.Name, &product.Description, &product.Price, &product.Stock, &product.CategoryID,
-			&product.ProductImage, &product.Popularity, &product.CreatedAt, &product.UpdatedAt)
+			&product.Popularity, &product.AveRating, &product.ProductImage, &product.CreatedAt, &product.UpdatedAt)
 		if err != nil {
 			return nil, err
 		}
@@ -95,7 +101,7 @@ func ShowACategoryProducts(categoryID int) ([]model.ShowProduct, error) {
 	for rows.Next() {
 		var product model.ShowProduct
 		err = rows.Scan(&product.ID, &product.Name, &product.Description, &product.Price, &product.Stock, &product.CategoryID,
-			&product.ProductImage, &product.Popularity, &product.CreatedAt, &product.UpdatedAt)
+			&product.Popularity, &product.AveRating, &product.ProductImage, &product.CreatedAt, &product.UpdatedAt)
 		if err != nil {
 			return nil, err
 		}

@@ -135,4 +135,8 @@ var (
 		Status: "40020",
 		Info:   "invalid refresh token",
 	}
+	ErrProductAlreadyInCart = Response{ //商品已在购物车中
+		Status: "40021",
+		Info:   "product already in cart",
+	}
 )
