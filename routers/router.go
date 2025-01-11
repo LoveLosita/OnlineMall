@@ -24,8 +24,10 @@ func RegisterRouters() {
 	merchantGroup.PUT("/add_product", middleware.JWTAuthMiddleware(), api.AddProduct)
 	merchantGroup.PUT("/add_category", middleware.JWTAuthMiddleware(), api.AddCategory)
 	merchantGroup.POST("/change_product", middleware.JWTAuthMiddleware(), api.ChangeProduct)
+	merchantGroup.DELETE("/delete_product", middleware.JWTAuthMiddleware(), api.DeleteProduct)
 
 	adminGroup.POST("/change_user_info", middleware.JWTAuthMiddleware(), api.ChangeUserInfo)
+	adminGroup.DELETE("/delete_user", middleware.JWTAuthMiddleware(), api.DeleteUser)
 
 	h.Spin()
 }

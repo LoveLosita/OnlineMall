@@ -105,3 +105,27 @@ func GetProductsInManyWays(ctx context.Context, c *app.RequestContext) {
 	}
 	c.JSON(consts.StatusOK, respond.Respond(respond.Ok, products))
 }
+
+func DeleteProduct(ctx context.Context, c *app.RequestContext) {
+	handlerID := int(c.GetFloat64("user_id")) //从上下文中获取用户的id
+	// 1.从请求中获取商品id
+	id := c.Query("id")
+	intID, err := strconv.ParseInt(id, 10, 0)
+	if err != nil {
+		c.JSON(consts.StatusBadRequest, respond.WrongParamType)
+		return
+	}
+	// 2.删除商品
+	err = service.DeleteProduct(int(intID), handlerID)
+	if err != nil {
+		switch {
+		case errors.Is(err, respond.ErrUnauthorized), errors.Is(err, respond.ErrProductNotExists):
+			c.JSON(consts.StatusUnauthorized, err)
+			return
+		default:
+			c.JSON(consts.StatusInternalServerError, respond.InternalError(err))
+			return
+		}
+	}
+	c.JSON(consts.StatusOK, respond.Ok)
+}

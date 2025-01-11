@@ -172,3 +172,25 @@ func ChangeUserInfo(handlerID int, targetID int, user model.ChangeInfoUser) erro
 	}
 	return nil
 }
+
+func DeleteUser(handlerID int, targetID int) error {
+	//1.检查管理员权限
+	handlerRole, err := auth.CheckPermission(handlerID)
+	if err != nil {
+		return err
+	}
+	if handlerRole != "admin" {
+		return respond.ErrUnauthorized
+	}
+	//2.寻找用户是否存在
+	_, err = dao.GetUserInfoByID(targetID)
+	if err != nil {
+		return err
+	}
+	//3.删除用户
+	err = dao.DeleteUser(targetID)
+	if err != nil {
+		return err
+	}
+	return nil
+}

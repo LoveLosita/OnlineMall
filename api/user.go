@@ -21,7 +21,8 @@ func UserRegister(ctx context.Context, c *app.RequestContext) {
 	err = service.UserRegister(user)
 	if err != nil {
 		switch {
-		case errors.Is(err, respond.InvalidName), errors.Is(err, respond.MissingParam), errors.Is(err, respond.ParamTooLong): //如果是无效ID或者缺少参数的错误
+		case errors.Is(err, respond.InvalidName), errors.Is(err, respond.MissingParam),
+			errors.Is(err, respond.ParamTooLong), errors.Is(err, respond.WrongGender): //如果是无效ID或者缺少参数的错误
 			c.JSON(consts.StatusBadRequest, err)
 			return
 		default:
@@ -105,5 +106,27 @@ func ChangeUserInfo(ctx context.Context, c *app.RequestContext) {
 		}
 	}
 	//3.返回成功
+	c.JSON(consts.StatusOK, respond.Ok)
+}
+
+func DeleteUser(ctx context.Context, c *app.RequestContext) {
+	handlerID := c.GetFloat64("user_id")
+	targetID := c.Query("id")
+	intID, err := strconv.ParseInt(targetID, 10, 64)
+	if err != nil {
+		c.JSON(consts.StatusBadRequest, respond.WrongParamType)
+		return
+	}
+	err = service.DeleteUser(int(handlerID), int(intID))
+	if err != nil {
+		switch {
+		case errors.Is(err, respond.WrongUserID), errors.Is(err, respond.ErrUnauthorized): //如果是用户id错误或者权限错误
+			c.JSON(consts.StatusBadRequest, err)
+			return
+		default:
+			c.JSON(consts.StatusInternalServerError, respond.InternalError(err))
+			return
+		}
+	}
 	c.JSON(consts.StatusOK, respond.Ok)
 }

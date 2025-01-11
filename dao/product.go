@@ -106,3 +106,12 @@ func ShowACategoryProducts(categoryID int) ([]model.ShowProduct, error) {
 	}
 	return products, nil
 }
+
+func DeleteProduct(id int) error {
+	query := "DELETE FROM products WHERE id=?"
+	_, err := Db.Exec(query, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}

@@ -111,3 +111,21 @@ func ShowProductInManyWays(productID int, keyword string, categoryID int) ([]mod
 	}
 	return dao.ShowAllProducts() //返回所有商品
 }
+
+func DeleteProduct(id int, handlerID int) error {
+	//1.检查用户权限
+	role, err := auth.CheckPermission(handlerID) //检查用户权限
+	if err != nil {                              //如果出错
+		return err
+	}
+	if role != "merchant" && role != "admin" { //如果不是商家及以上
+		return respond.ErrUnauthorized //返回错误
+	}
+	//2.检查商品是否存在
+	_, err = dao.GetProductInfoByID(id) //检查商品是否存在
+	if err != nil {
+		return err
+	}
+	//3.删除商品
+	return dao.DeleteProduct(id) //调用dao层函数
+}

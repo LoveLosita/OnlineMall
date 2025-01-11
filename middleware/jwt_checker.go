@@ -27,14 +27,12 @@ func JWTAuthMiddleware() app.HandlerFunc {
 		token, err := jwt.Parse(string(tokenString), func(token *jwt.Token) (interface{}, error) {
 			// 确保签名方法是我们支持的 HMAC
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
-				return nil, jwt.NewValidationError(respond.InvalidTokenSingingMethod.Error(), jwt.ValidationErrorSignatureInvalid)
+				return nil, respond.InvalidTokenSingingMethod
 			}
 			return jwtSecret, nil
 		})
 		if err != nil || !token.Valid { //token无效
-			c.JSON(consts.StatusUnauthorized, map[string]string{
-				"error": respond.InvalidToken.Error(),
-			})
+			c.JSON(consts.StatusUnauthorized, respond.InvalidToken)
 			c.Abort() // 中断后续流程
 			return
 		}
@@ -45,9 +43,7 @@ func JWTAuthMiddleware() app.HandlerFunc {
 			//fmt.Printf("%T", claims["user_id"]) //测试用
 			//fmt.Println("Claims:", claims) // 打印出所有解析到的 claims//测试用
 		} else {
-			c.JSON(consts.StatusUnauthorized, map[string]string{
-				"error": respond.InvalidClaims.Error(),
-			})
+			c.JSON(consts.StatusUnauthorized, respond.InvalidClaims)
 			c.Abort()
 		}
 	}

@@ -119,3 +119,12 @@ func UpdateUserInfo(id int, user model.ChangeInfoUser) error { //更新用户信
 	}
 	return nil
 }
+
+func DeleteUser(id int) error { //删除用户
+	query := "DELETE FROM users WHERE id=?"
+	_, err := Db.Exec(query, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
