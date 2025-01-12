@@ -3,6 +3,7 @@ package dao
 import (
 	"OnlineMall/model"
 	"OnlineMall/respond"
+	"fmt"
 )
 
 func AddProduct(product model.AddProduct) error {
@@ -23,7 +24,7 @@ func UpdateProduct(id int, product model.AddProduct) error {
 	return nil
 }
 
-func GetProductInfoByID(productID int) (model.ShowProduct, error) { //计入热度计算
+func GetProductInfoByID(productID int, getMethod int) (model.ShowProduct, error) { //计入热度计算
 	query := "SELECT * FROM products WHERE id=?"
 	rows, err := Db.Query(query, productID)
 	if err != nil {
@@ -31,16 +32,19 @@ func GetProductInfoByID(productID int) (model.ShowProduct, error) { //计入热�
 	}
 	var product model.ShowProduct
 	for rows.Next() { //如果有这个商品
+		fmt.Println(3)
 		err = rows.Scan(&product.ID, &product.Name, &product.Description, &product.Price, &product.Stock, &product.CategoryID,
 			&product.Popularity, &product.AveRating, &product.ProductImage, &product.CreatedAt, &product.UpdatedAt)
 		if err != nil {
 			return model.ShowProduct{}, err
 		}
-		//更新热度
-		query = "UPDATE products SET popularity=popularity+1 WHERE id=?"
-		_, err = Db.Exec(query, productID)
-		if err != nil {
-			return model.ShowProduct{}, err
+		//如果getMethod==1，说明是通过点击商品详情页进入的，需要增加热度；其他都是后端计算调用，不需要增加热度
+		if getMethod == 1 {
+			query = "UPDATE products SET popularity=popularity+1 WHERE id=?"
+			_, err = Db.Exec(query, productID)
+			if err != nil {
+				return model.ShowProduct{}, err
+			}
 		}
 		return product, nil
 	}

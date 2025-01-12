@@ -7,7 +7,7 @@ import (
 
 func AddProductToCart(userID, productID, quantity int) error {
 	//1.检查商品是否存在
-	_, err := dao.GetProductInfoByID(productID)
+	_, err := dao.GetProductInfoByID(productID, 0)
 	if err != nil {
 		return err
 	}

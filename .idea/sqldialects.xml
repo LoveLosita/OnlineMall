@@ -3,6 +3,7 @@
   <component name="SqlDialectMappings">
     <file url="file://$PROJECT_DIR$/dao/cart.go" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/dao/categories.go" dialect="GenericSQL" />
+    <file url="file://$PROJECT_DIR$/dao/order.go" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/dao/product.go" dialect="GenericSQL" />
     <file url="file://$PROJECT_DIR$/dao/user.go" dialect="GenericSQL" />
   </component>

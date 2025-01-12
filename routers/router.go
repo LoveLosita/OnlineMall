@@ -21,6 +21,7 @@ func RegisterRouters() {
 	userGroup.POST("/change_username_or_password", middleware.JWTAuthMiddleware(), api.ChangeUserPasswordOrName)
 	userGroup.GET("/refresh_token", middleware.JWTAuthMiddleware(), api.RefreshTokenHandler)
 	userGroup.POST("/add_to_cart", middleware.JWTAuthMiddleware(), api.AddProductToCart)
+	userGroup.POST("/place_order", middleware.JWTAuthMiddleware(), api.PlaceOrder)
 
 	merchantGroup.PUT("/add_product", middleware.JWTAuthMiddleware(), api.AddProduct)
 	merchantGroup.PUT("/add_category", middleware.JWTAuthMiddleware(), api.AddCategory)

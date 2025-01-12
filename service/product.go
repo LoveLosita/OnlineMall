@@ -61,7 +61,7 @@ func ChangeProduct(id int, product model.AddProduct, handlerID int) error {
 		return respond.ParamTooLong
 	}
 	//3.获取商品信息，并且判断是否已经填写对应信息，实现选择性更新
-	oldProduct, err := dao.GetProductInfoByID(id) //同时可以检查商品是否存在
+	oldProduct, err := dao.GetProductInfoByID(id, 0) //同时可以检查商品是否存在
 	if err != nil {
 		return err
 	}
@@ -97,7 +97,7 @@ func ChangeProduct(id int, product model.AddProduct, handlerID int) error {
 func ShowProductInManyWays(productID int, keyword string, categoryID int) ([]model.ShowProduct, error) {
 	//优先级：商品id>关键字>分类id>全部商品
 	if productID != 0 { //如果有商品id
-		product, err := dao.GetProductInfoByID(productID)
+		product, err := dao.GetProductInfoByID(productID, 1)
 		if err != nil {
 			return nil, err
 		}
@@ -122,7 +122,7 @@ func DeleteProduct(id int, handlerID int) error {
 		return respond.ErrUnauthorized //返回错误
 	}
 	//2.检查商品是否存在
-	_, err = dao.GetProductInfoByID(id) //检查商品是否存在
+	_, err = dao.GetProductInfoByID(id, 0) //检查商品是否存在
 	if err != nil {
 		return err
 	}

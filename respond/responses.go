@@ -139,4 +139,8 @@ var (
 		Status: "40021",
 		Info:   "product already in cart",
 	}
+	ErrQuantityTooLarge = Response{ //数量太大
+		Status: "40022",
+		Info:   "quantity too large",
+	}
 )
