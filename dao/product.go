@@ -3,7 +3,6 @@ package dao
 import (
 	"OnlineMall/model"
 	"OnlineMall/respond"
-	"fmt"
 )
 
 func AddProduct(product model.AddProduct) error {
@@ -32,7 +31,6 @@ func GetProductInfoByID(productID int, getMethod int) (model.ShowProduct, error)
 	}
 	var product model.ShowProduct
 	for rows.Next() { //如果有这个商品
-		fmt.Println(3)
 		err = rows.Scan(&product.ID, &product.Name, &product.Description, &product.Price, &product.Stock, &product.CategoryID,
 			&product.Popularity, &product.AveRating, &product.ProductImage, &product.CreatedAt, &product.UpdatedAt)
 		if err != nil {
@@ -120,6 +118,15 @@ func ShowACategoryProducts(categoryID int) ([]model.ShowProduct, error) {
 func DeleteProduct(id int) error {
 	query := "DELETE FROM products WHERE id=?"
 	_, err := Db.Exec(query, id)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func UpdateRating(productID int, aveRating float64) error {
+	query := "UPDATE products SET ave_rating=? WHERE id=?"
+	_, err := Db.Exec(query, aveRating, productID)
 	if err != nil {
 		return err
 	}

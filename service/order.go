@@ -4,7 +4,6 @@ import (
 	"OnlineMall/dao"
 	"OnlineMall/model"
 	"OnlineMall/respond"
-	"fmt"
 )
 
 func PlaceAnOrder(order model.PlaceOrder) (model.ReturnOrder, error) {
@@ -17,7 +16,6 @@ func PlaceAnOrder(order model.PlaceOrder) (model.ReturnOrder, error) {
 	//2.计算商品单价*数量
 	var product model.ShowProduct
 	var err error
-	fmt.Println(order)
 	for i := 0; i < len(order.Items); i++ {
 		product, err = dao.GetProductInfoByID(order.Items[i].ProductID, 0)
 		if err != nil {
@@ -32,10 +30,8 @@ func PlaceAnOrder(order model.PlaceOrder) (model.ReturnOrder, error) {
 	}
 	//4.把订单信息存入数据库
 	order.Status = "completed" //订单状态设置为已完成
-	fmt.Println(order)
 	returnOrder, err := dao.PlaceAnOrder(order)
 	if err != nil {
-		fmt.Println(1)
 		return model.ReturnOrder{}, err
 	}
 	return returnOrder, nil

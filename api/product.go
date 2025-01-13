@@ -6,7 +6,6 @@ import (
 	"OnlineMall/service"
 	"context"
 	"errors"
-	"fmt"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
 	"strconv"
@@ -81,13 +80,11 @@ func GetProductsInManyWays(ctx context.Context, c *app.RequestContext) {
 	}
 	intProductID, err := strconv.ParseInt(productID, 10, 0)
 	if err != nil {
-		fmt.Println(1)
 		c.JSON(consts.StatusBadRequest, respond.WrongParamType)
 		return
 	}
 	intCategoryID, err := strconv.ParseInt(categoryID, 10, 0)
 	if err != nil {
-		fmt.Println(2)
 		c.JSON(consts.StatusBadRequest, respond.WrongParamType)
 		return
 	}

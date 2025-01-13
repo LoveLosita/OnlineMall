@@ -3,7 +3,6 @@ package dao
 import (
 	"OnlineMall/model"
 	"OnlineMall/respond"
-	"log"
 )
 
 func UserRegister(user model.User) error { //注册用户
@@ -14,7 +13,6 @@ func UserRegister(user model.User) error { //注册用户
 	_, err := Db.Exec(query, user.Username, user.Email, user.Password, user.FullName, user.PhoneNumber, user.Nickname,
 		user.QQ, user.Avatar, user.Gender, user.Bio)
 	if err != nil {
-		log.Printf("Error inserting user: %v", err)
 		return err
 	}
 	return nil

@@ -1,10 +1,12 @@
 package model
 
+import "time"
+
 type Order struct {
-	ID        int    `json:"id"`
-	UserID    int    `json:"user_id"`
-	Status    string `json:"status"`
-	OrderDate string `json:"order_date"`
+	ID        int       `json:"id"`
+	UserID    int       `json:"user_id"`
+	Status    string    `json:"status"`
+	OrderDate time.Time `json:"order_date"`
 }
 
 type PlaceOrder struct {

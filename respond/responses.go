@@ -31,7 +31,7 @@ func InternalError(err error) Response { //服务器错误
 	}
 }
 
-var (
+var ( //请求相关的响应
 	Ok = Response{ //正常
 		Status: "10000",
 		Info:   "success",
@@ -142,5 +142,28 @@ var (
 	ErrQuantityTooLarge = Response{ //数量太大
 		Status: "40022",
 		Info:   "quantity too large",
+	}
+	ErrUserDidntBuyThisProduct = Response{ //用户没有购买这个商品
+		Status: "40024",
+		Info:   "user didn't buy this product",
+	}
+	ErrUserHasAlreadyReviewed = Response{ //用户已经评论过了
+		Status: "40025",
+		Info:   "user has already reviewed",
+	}
+	ErrRatingOutOfRange = Response{ //评分超出范围
+		Status: "40026",
+		Info:   "rating out of range",
+	}
+	ErrCommentTooLong = Response{ //评论太长
+		Status: "40027",
+		Info:   "comment too long",
+	}
+)
+
+var ( //服务器错误
+	ErrOrderNotExists = Response{ //订单不存在
+		Status: "50001",
+		Info:   "order not exists",
 	}
 )
