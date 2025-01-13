@@ -23,6 +23,7 @@ func RegisterRouters() {
 	userGroup.POST("/add_to_cart", middleware.JWTAuthMiddleware(), api.AddProductToCart)
 	userGroup.POST("/place_order", middleware.JWTAuthMiddleware(), api.PlaceOrder)
 	userGroup.POST("/rate_and_review", middleware.JWTAuthMiddleware(), api.RateAndReviewProduct)
+	userGroup.POST("/reply_to_review", middleware.JWTAuthMiddleware(), api.ReplyToReview)
 
 	merchantGroup.PUT("/add_product", middleware.JWTAuthMiddleware(), api.AddProduct)
 	merchantGroup.PUT("/add_category", middleware.JWTAuthMiddleware(), api.AddCategory)

@@ -14,6 +14,12 @@ type ShowReview struct {
 	ProductID int    `json:"product_id"`
 	Rating    int    `json:"rating"`
 	Comment   string `json:"comment"`
+	Replies   []ShowReview
 	CreatedAt string `json:"created_at"`
 	UpdatedAt string `json:"updated_at"`
+}
+
+type ReplyToReview struct {
+	ReplyToID int    `json:"review_id"`
+	Reply     string `json:"reply"`
 }

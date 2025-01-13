@@ -51,7 +51,7 @@ func RatingAndReviewProduct(review model.AddReview) error {
 		}
 	}
 	//6.评论
-	err = dao.RateAndReviewProduct(review)
+	err = dao.AddReviewOrReply(review)
 	if err != nil {
 		return err
 	}
@@ -78,6 +78,37 @@ func UpdateAverageRating(productID int) error {
 	aveRating = float64(sum) / float64(len(ratings))
 	//3.更新商品的平均分
 	err = dao.UpdateRating(productID, aveRating)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func ReplyToReview(handlerID int, reply model.ReplyToReview) error {
+	//1.检查参数合法性
+	if reply.ReplyToID == 0 || reply.Reply == "" {
+		return respond.MissingParam
+	}
+	if len(reply.Reply) > 1000 {
+		return respond.ErrCommentTooLong
+	}
+	//2.检查parent_id是否存在
+	result, err := dao.IfReviewExists(reply.ReplyToID)
+	if err != nil {
+		return err
+	}
+	if !result { //如果不存在
+		return respond.ErrParentNotExists
+	}
+	//3.将回复结构体信息转写进review结构体
+	var review model.AddReview
+	review.UserID = handlerID
+	review.ProductID = -1 //因为是回复，所以不需要product_id
+	review.ParentID = &reply.ReplyToID
+	review.Rating = -1 //因为是回复，所以不需要rating
+	review.Comment = reply.Reply
+	//4.调用dao函数完成回复
+	err = dao.AddReviewOrReply(review)
 	if err != nil {
 		return err
 	}

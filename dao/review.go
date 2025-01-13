@@ -2,7 +2,7 @@ package dao
 
 import "OnlineMall/model"
 
-func RateAndReviewProduct(review model.AddReview) error {
+func AddReviewOrReply(review model.AddReview) error {
 	query := "INSERT INTO reviews(user_id,product_id,parent_id,rating,comment) VALUES(?,?,?,?,?)"
 	_, err := Db.Exec(query, review.UserID, review.ProductID, review.ParentID, review.Rating, review.Comment)
 	if err != nil {
@@ -40,4 +40,17 @@ func GetProductRatings(productID int) ([]int, error) {
 		ratings = append(ratings, rating)
 	}
 	return ratings, nil
+}
+
+func IfReviewExists(parentID int) (bool, error) {
+	query := "SELECT id FROM reviews WHERE id=?"
+	rows, err := Db.Query(query, parentID)
+	if err != nil {
+		return false, err
+	}
+	if rows.Next() { //如果有这个评论
+		return true, nil
+	} else { //如果没有这个评论
+		return false, nil
+	}
 }

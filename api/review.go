@@ -37,5 +37,29 @@ func RateAndReviewProduct(ctx context.Context, c *app.RequestContext) {
 		}
 	}
 	c.JSON(consts.StatusOK, respond.Ok)
+}
 
+func ReplyToReview(ctx context.Context, c *app.RequestContext) {
+	handlerID := int(c.GetFloat64("user_id")) //从上下文中获取用户的id
+	// 从请求中获取评论信息
+	var review model.ReplyToReview
+	err := c.BindJSON(&review)
+	if err != nil {
+		c.JSON(consts.StatusBadRequest, respond.WrongParamType)
+		return
+	}
+	// 回复评论
+	err = service.ReplyToReview(handlerID, review)
+	if err != nil {
+		switch {
+		case errors.Is(err, respond.MissingParam), errors.Is(err, respond.ErrCommentTooLong),
+			errors.Is(err, respond.ErrParentNotExists):
+			c.JSON(consts.StatusBadRequest, err)
+			return
+		default:
+			c.JSON(consts.StatusInternalServerError, respond.InternalError(err))
+			return
+		}
+	}
+	c.JSON(consts.StatusOK, respond.Ok)
 }

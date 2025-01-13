@@ -159,6 +159,10 @@ var ( //请求相关的响应
 		Status: "40027",
 		Info:   "comment too long",
 	}
+	ErrParentNotExists = Response{ //父评论不存在
+		Status: "40028",
+		Info:   "parent comment not exists",
+	}
 )
 
 var ( //服务器错误
