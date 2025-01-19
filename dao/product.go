@@ -80,8 +80,8 @@ func ShowAllProducts() ([]model.ShowProduct, error) {
 	var products []model.ShowProduct
 	for rows.Next() {
 		var product model.ShowProduct
-		err = rows.Scan(&product.ID, &product.Name, &product.Description, &product.Price, &product.Stock, &product.CategoryID,
-			&product.ProductImage, &product.Popularity, &product.CreatedAt, &product.UpdatedAt)
+		err = rows.Scan(&product.ID, &product.Name, &product.Description, &product.Price, &product.Stock, &product.CategoryID, &product.Popularity,
+			&product.AveRating, &product.ProductImage, &product.CreatedAt, &product.UpdatedAt)
 		if err != nil {
 			return nil, err
 		}

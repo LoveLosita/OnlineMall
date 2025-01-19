@@ -14,7 +14,12 @@ func RegisterRouters() {
 	adminGroup := h.Group("/admin")
 
 	//分组依据为使用对应功能需要的最低权限
-	h.GET("show_product", api.GetProductsInManyWays)
+	//h.GET("show_product", api.GetProductsInManyWays)
+
+	h.GET("/search_products", api.SearchForProducts)
+	h.GET("/show_all_products", api.ShowAllProducts)
+	h.GET("/show_category_products", api.ShowACategoryProducts)
+	h.GET("/view_product", api.ShowSingleProduct)
 
 	userGroup.PUT("/register", api.UserRegister)
 	userGroup.POST("/login", api.UserLogin)

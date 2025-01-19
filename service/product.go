@@ -107,6 +107,14 @@ func ShowProductInManyWays(productID int, keyword string, categoryID int) ([]mod
 		return dao.GetProductInfoByKeyWord(keyword)
 	}
 	if categoryID != 0 { //如果有分类id
+		//检查分类是否存在
+		result, err := dao.CheckIfCategoryExists(categoryID)
+		if err != nil {
+			return nil, err
+		}
+		if !result { //如果不存在
+			return nil, respond.ErrCategoryNotExists //返回错误
+		}
 		return dao.ShowACategoryProducts(categoryID)
 	}
 	return dao.ShowAllProducts() //返回所有商品
