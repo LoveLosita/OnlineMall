@@ -163,6 +163,10 @@ var ( //请求相关的响应
 		Status: "40028",
 		Info:   "parent comment not exists",
 	}
+	ErrEmptyCart = Response{ //购物车为空
+		Status: "40029",
+		Info:   "cart is empty",
+	}
 )
 
 var ( //服务器错误

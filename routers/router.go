@@ -29,6 +29,8 @@ func RegisterRouters() {
 	userGroup.POST("/place_order", middleware.JWTAuthMiddleware(), api.PlaceOrder)
 	userGroup.POST("/rate_and_review", middleware.JWTAuthMiddleware(), api.RateAndReviewProduct)
 	userGroup.POST("/reply_to_review", middleware.JWTAuthMiddleware(), api.ReplyToReview)
+	userGroup.GET("/search_product_in_cart", middleware.JWTAuthMiddleware(), api.SearchForProductsInCart)
+	userGroup.GET("/show_products_in_cart", middleware.JWTAuthMiddleware(), api.GetUserCart)
 
 	merchantGroup.PUT("/add_product", middleware.JWTAuthMiddleware(), api.AddProduct)
 	merchantGroup.PUT("/add_category", middleware.JWTAuthMiddleware(), api.AddCategory)

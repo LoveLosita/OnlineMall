@@ -32,3 +32,44 @@ func AddProductToCart(ctx context.Context, c *app.RequestContext) {
 	}
 	c.JSON(consts.StatusOK, respond.Ok)
 }
+
+func SearchForProductsInCart(ctx context.Context, c *app.RequestContext) {
+	//1.获取请求体
+	handlerID := int(c.GetFloat64("user_id"))
+	keyword := c.Query("keyword")
+	if keyword == "" {
+		c.JSON(consts.StatusBadRequest, respond.MissingParam)
+		return
+	}
+	//2.搜索购物车中的商品
+	products, err := service.SearchForProductsInCart(handlerID, keyword)
+	if err != nil {
+		switch {
+		case errors.Is(err, respond.CantFindProduct):
+			c.JSON(consts.StatusBadRequest, err)
+			return
+		default:
+			c.JSON(consts.StatusInternalServerError, respond.InternalError(err))
+			return
+		}
+	}
+	c.JSON(consts.StatusOK, products)
+}
+
+func GetUserCart(ctx context.Context, c *app.RequestContext) {
+	//1.获取请求体
+	handlerID := int(c.GetFloat64("user_id"))
+	//2.获取用户购物车全部商品
+	products, err := service.GetUserCart(handlerID)
+	if err != nil {
+		switch {
+		case errors.Is(err, respond.ErrEmptyCart):
+			c.JSON(consts.StatusBadRequest, err)
+			return
+		default:
+			c.JSON(consts.StatusInternalServerError, respond.InternalError(err))
+			return
+		}
+	}
+	c.JSON(consts.StatusOK, products)
+}
