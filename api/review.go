@@ -8,6 +8,7 @@ import (
 	"errors"
 	"github.com/cloudwego/hertz/pkg/app"
 	"github.com/cloudwego/hertz/pkg/protocol/consts"
+	"strconv"
 )
 
 func RateAndReviewProduct(ctx context.Context, c *app.RequestContext) {
@@ -62,4 +63,27 @@ func ReplyToReview(ctx context.Context, c *app.RequestContext) {
 		}
 	}
 	c.JSON(consts.StatusOK, respond.Ok)
+}
+
+func ShowAProductReviews(ctx context.Context, c *app.RequestContext) {
+	//1.从请求中获取商品id
+	productID := c.Query("product_id")
+	intProductID, err := strconv.ParseInt(productID, 10, 64)
+	if err != nil {
+		c.JSON(consts.StatusBadRequest, respond.WrongParamType)
+		return
+	}
+	//2.获取商品的评论
+	reviews, err := service.BuildReviewTree(int(intProductID))
+	if err != nil {
+		switch {
+		case errors.Is(err, respond.EmptyProductReviews), errors.Is(err, respond.ErrProductNotExists):
+			c.JSON(consts.StatusNotFound, err)
+			return
+		default:
+			c.JSON(consts.StatusInternalServerError, respond.InternalError(err))
+			return
+		}
+	}
+	c.JSON(consts.StatusOK, respond.Respond(respond.Ok, reviews))
 }

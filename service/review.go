@@ -114,3 +114,37 @@ func ReplyToReview(handlerID int, reply model.ReplyToReview) error {
 	}
 	return nil
 }
+
+func BuildReviewTree(productID int) ([]model.ShowReview, error) { //构建评论树
+	//1.首先检查是否有这个商品
+	_, err := dao.GetProductInfoByID(productID, 0)
+	if err != nil {
+		return nil, err
+	}
+	//2.获取所有评论
+	reviews, err := dao.GetAProductReviews(productID) //获取所有评论
+	if len(reviews) == 0 {                            //如果评论为空
+		return nil, respond.EmptyProductReviews
+	}
+	if err != nil {
+		return nil, err
+	}
+	//3.构建评论树
+	for i := len(reviews) - 1; i >= 0; i-- { //从后往前遍历
+		if reviews[i].ParentID != nil { //如果有父评论
+			for j := 0; j < i; j++ { //寻找父评论
+				if *reviews[i].ParentID == reviews[j].ID { //如果找到了父评论
+					reviews[j].Replies = append(reviews[j].Replies, reviews[i]) //将子评论添加到父评论的Replies中
+					break
+				}
+			}
+		}
+	}
+	var resultList []model.ShowReview //定义一个评论列表
+	for _, review := range reviews {  //遍历评论
+		if review.ParentID == nil { //如果没有父评论
+			resultList = append(resultList, review) //将评论添加到评论列表中
+		}
+	}
+	return resultList, nil
+}

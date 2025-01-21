@@ -54,3 +54,39 @@ func IfReviewExists(parentID int) (bool, error) {
 		return false, nil
 	}
 }
+
+func GetAProductReviews(productID int) ([]model.ShowReview, error) {
+	//1.获取直接属于该商品的评论
+	query := "SELECT * FROM reviews WHERE product_id=?"
+	rows, err := Db.Query(query, productID)
+	if err != nil {
+		return nil, err
+	}
+	//2.获取回复上面评论的评论
+	query = "SELECT * FROM reviews WHERE parent_id IN (SELECT id FROM reviews WHERE product_id=?)"
+	rows2, err := Db.Query(query, productID)
+	if err != nil {
+		return nil, err
+	}
+	//3.将两组评论放入切片中
+	var reviews []model.ShowReview
+	for rows.Next() { //遍历所有获取的评论
+		var review model.ShowReview
+		err = rows.Scan(&review.ID, &review.UserID, &review.ProductID, &review.ParentID, &review.Rating,
+			&review.Comment, &review.CreatedAt, &review.UpdatedAt)
+		if err != nil {
+			return nil, err
+		}
+		reviews = append(reviews, review)
+	}
+	for rows2.Next() { //遍历所有获取的评论
+		var review model.ShowReview
+		err = rows2.Scan(&review.ID, &review.UserID, &review.ProductID, &review.ParentID, &review.Rating,
+			&review.Comment, &review.CreatedAt, &review.UpdatedAt)
+		if err != nil {
+			return nil, err
+		}
+		reviews = append(reviews, review)
+	}
+	return reviews, nil
+}

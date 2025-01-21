@@ -167,6 +167,10 @@ var ( //请求相关的响应
 		Status: "40029",
 		Info:   "cart is empty",
 	}
+	EmptyProductReviews = Response{ //商品评论为空
+		Status: "40030",
+		Info:   "product reviews is empty",
+	}
 )
 
 var ( //服务器错误

@@ -20,6 +20,7 @@ func RegisterRouters() {
 	h.GET("/show_all_products", api.ShowAllProducts)
 	h.GET("/show_category_products", api.ShowACategoryProducts)
 	h.GET("/view_product", api.ShowSingleProduct)
+	h.GET("/show_product_reviews", api.ShowAProductReviews)
 
 	userGroup.PUT("/register", api.UserRegister)
 	userGroup.POST("/login", api.UserLogin)

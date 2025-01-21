@@ -1,4 +1,4 @@
-package main
+package cmd
 
 import (
 	"OnlineMall/dao"
@@ -6,7 +6,7 @@ import (
 	"fmt"
 )
 
-func main() {
+func Start() {
 	err := dao.ConnectDB()
 	if err != nil {
 		fmt.Println(err)
