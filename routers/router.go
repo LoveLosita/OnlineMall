@@ -14,7 +14,6 @@ func RegisterRouters() {
 	adminGroup := h.Group("/admin")
 
 	//分组依据为使用对应功能需要的最低权限
-	//h.GET("show_product", api.GetProductsInManyWays)
 
 	h.GET("/search_products", api.SearchForProducts)
 	h.GET("/show_all_products", api.ShowAllProducts)
@@ -37,6 +36,7 @@ func RegisterRouters() {
 	merchantGroup.PUT("/add_category", middleware.JWTAuthMiddleware(), api.AddCategory)
 	merchantGroup.POST("/change_product", middleware.JWTAuthMiddleware(), api.ChangeProduct)
 	merchantGroup.DELETE("/delete_product", middleware.JWTAuthMiddleware(), api.DeleteProduct)
+	merchantGroup.GET("/search_for_comments", middleware.JWTAuthMiddleware(), api.SearchForAProductReview)
 
 	adminGroup.POST("/change_user_info", middleware.JWTAuthMiddleware(), api.ChangeUserInfo)
 	adminGroup.DELETE("/delete_user", middleware.JWTAuthMiddleware(), api.DeleteUser)

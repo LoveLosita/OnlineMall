@@ -90,3 +90,54 @@ func GetAProductReviews(productID int) ([]model.ShowReview, error) {
 	}
 	return reviews, nil
 }
+
+func SearchForProductReviews(productID int, keyword string) ([]model.ShowReview, error) {
+	//1.获取直接属于该商品的评论
+	query := "SELECT * FROM reviews WHERE product_id=? AND comment LIKE ?"
+	rows, err := Db.Query(query, productID, "%"+keyword+"%")
+	if err != nil {
+		return nil, err
+	}
+	//2.获取回复上面评论的评论或者有相同关键词的回复
+	query = "SELECT * FROM reviews WHERE parent_id IN (SELECT id FROM reviews WHERE product_id=? AND comment LIKE ?)"
+	rows2, err := Db.Query(query, productID, "%"+keyword+"%")
+	if err != nil {
+		return nil, err
+	}
+	//3.获取同样含有关键词的回复
+	query = "SELECT * FROM reviews WHERE product_id IS NOT NULL AND comment LIKE ?"
+	rows3, err := Db.Query(query, "%"+keyword+"%")
+	if err != nil {
+		return nil, err
+	}
+	//4.将3组评论放入切片中
+	var reviews []model.ShowReview
+	for rows.Next() { //遍历所有获取的评论
+		var review model.ShowReview
+		err = rows.Scan(&review.ID, &review.UserID, &review.ProductID, &review.ParentID, &review.Rating,
+			&review.Comment, &review.CreatedAt, &review.UpdatedAt)
+		if err != nil {
+			return nil, err
+		}
+		reviews = append(reviews, review)
+	}
+	for rows2.Next() { //遍历所有获取的评论
+		var review model.ShowReview
+		err = rows2.Scan(&review.ID, &review.UserID, &review.ProductID, &review.ParentID, &review.Rating,
+			&review.Comment, &review.CreatedAt, &review.UpdatedAt)
+		if err != nil {
+			return nil, err
+		}
+		reviews = append(reviews, review)
+	}
+	for rows3.Next() { //遍历所有获取的评论
+		var review model.ShowReview
+		err = rows3.Scan(&review.ID, &review.UserID, &review.ProductID, &review.ParentID, &review.Rating,
+			&review.Comment, &review.CreatedAt, &review.UpdatedAt)
+		if err != nil {
+			return nil, err
+		}
+		reviews = append(reviews, review)
+	}
+	return reviews, nil
+}

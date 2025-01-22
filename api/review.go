@@ -87,3 +87,34 @@ func ShowAProductReviews(ctx context.Context, c *app.RequestContext) {
 	}
 	c.JSON(consts.StatusOK, respond.Respond(respond.Ok, reviews))
 }
+
+func SearchForAProductReview(ctx context.Context, c *app.RequestContext) {
+	//1.从请求中获取商品id
+	productID := c.Query("product_id")
+	intProductID, err := strconv.ParseInt(productID, 10, 64)
+	if err != nil {
+		c.JSON(consts.StatusBadRequest, respond.WrongParamType)
+		return
+	}
+	//2.从请求中获取关键词
+	keyword := c.Query("keyword")
+	if keyword == "" {
+		c.JSON(consts.StatusBadRequest, respond.MissingParam)
+		return
+	}
+	//3.从上下文中获取用户id
+	handlerID := int(c.GetFloat64("user_id"))
+	//4.获取商品的评论
+	review, err := service.BuildReviewTree2(int(intProductID), keyword, handlerID)
+	if err != nil {
+		switch {
+		case errors.Is(err, respond.ErrUnauthorized), errors.Is(err, respond.CantFindReview):
+			c.JSON(consts.StatusNotFound, err)
+			return
+		default:
+			c.JSON(consts.StatusInternalServerError, respond.InternalError(err))
+			return
+		}
+	}
+	c.JSON(consts.StatusOK, respond.Respond(respond.Ok, review))
+}

@@ -171,6 +171,10 @@ var ( //请求相关的响应
 		Status: "40030",
 		Info:   "product reviews is empty",
 	}
+	CantFindReview = Response{ //找不到评论
+		Status: "40031",
+		Info:   "can't find review",
+	}
 )
 
 var ( //服务器错误
