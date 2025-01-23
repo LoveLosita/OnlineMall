@@ -40,6 +40,7 @@ func RegisterRouters() {
 
 	adminGroup.POST("/change_user_info", middleware.JWTAuthMiddleware(), api.ChangeUserInfo)
 	adminGroup.DELETE("/delete_user", middleware.JWTAuthMiddleware(), api.DeleteUser)
+	adminGroup.DELETE("/delete_comment", middleware.JWTAuthMiddleware(), api.DeleteReview)
 
 	h.Spin()
 }

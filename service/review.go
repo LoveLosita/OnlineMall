@@ -194,3 +194,38 @@ func BuildReviewTree2(productID int, keyword string, handlerID int) ([]model.Sho
 	}
 	return resultList, nil
 }
+
+func DeleteReview(handlerID int, reviewID int) error {
+	//1.检查权限
+	role, err := auth.CheckPermission(handlerID)
+	if err != nil {
+		return err
+	}
+	if role != "admin" { //如果不是管理员
+		return respond.ErrUnauthorized
+	}
+	//2.检查评论是否存在
+	result, err := dao.IfReviewExists(reviewID)
+	if err != nil {
+		return err
+	}
+	if !result { //如果不存在
+		return respond.ErrReviewNotExists
+	}
+	//获取商品id
+	productID, err := dao.GetProductIDByReviewID(reviewID)
+	if err != nil {
+		return err
+	}
+	//3.删除评论
+	err = dao.DeleteReview(reviewID)
+	if err != nil {
+		return err
+	}
+	//4.删除评论后更新商品的评分
+	err = UpdateAverageRating(productID)
+	if err != nil {
+		return err
+	}
+	return nil
+}

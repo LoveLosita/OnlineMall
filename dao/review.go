@@ -1,6 +1,9 @@
 package dao
 
-import "OnlineMall/model"
+import (
+	"OnlineMall/model"
+	"OnlineMall/respond"
+)
 
 func AddReviewOrReply(review model.AddReview) error {
 	query := "INSERT INTO reviews(user_id,product_id,parent_id,rating,comment) VALUES(?,?,?,?,?)"
@@ -140,4 +143,39 @@ func SearchForProductReviews(productID int, keyword string) ([]model.ShowReview,
 		reviews = append(reviews, review)
 	}
 	return reviews, nil
+}
+
+func DeleteReview(reviewID int) error {
+	//1.先删除回复（如果有的话）
+	query := "DELETE FROM reviews WHERE parent_id=?"
+	_, err := Db.Exec(query, reviewID)
+	if err != nil {
+		return err
+	}
+	//2.再删除主评论
+	query = "DELETE FROM reviews WHERE id=?"
+	_, err = Db.Exec(query, reviewID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func GetProductIDByReviewID(reviewID int) (int, error) {
+	query := "SELECT product_id FROM reviews WHERE id=?"
+	rows, err := Db.Query(query, reviewID)
+	if err != nil {
+		return 0, err
+	}
+	var productID int
+	for rows.Next() {
+		err = rows.Scan(&productID)
+		if err != nil {
+			return 0, err
+		}
+	}
+	if productID == 0 {
+		return 0, respond.ErrReviewNotExists
+	}
+	return productID, nil
 }

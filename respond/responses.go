@@ -175,6 +175,10 @@ var ( //请求相关的响应
 		Status: "40031",
 		Info:   "can't find review",
 	}
+	ErrReviewNotExists = Response{ //评论不存在
+		Status: "40032",
+		Info:   "review not exists",
+	}
 )
 
 var ( //服务器错误
