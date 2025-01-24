@@ -137,3 +137,17 @@ func DeleteProduct(id int, handlerID int) error {
 	//3.删除商品
 	return dao.DeleteProduct(id) //调用dao层函数
 }
+
+func AddUserProductHistory(userID, productID int) error {
+	return dao.AddUserProductHistory(userID, productID) //调用dao层函数
+}
+
+func ShowUserProductHistory(userID int) ([]model.ShowProduct, error) {
+	//1.检查用户是否存在
+	_, err := dao.GetUserInfoByID(userID) //检查用户是否存在
+	if err != nil {
+		return nil, err
+	}
+	//2.获取用户浏览记录
+	return dao.GetUserProductHistory(userID) //调用dao层函数
+}

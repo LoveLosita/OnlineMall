@@ -132,3 +132,34 @@ func UpdateRating(productID int, aveRating float64) error {
 	}
 	return nil
 }
+
+func AddUserProductHistory(userID int, productID int) error {
+	query := "INSERT INTO product_view_history(user_id,product_id) VALUES(?,?)"
+	_, err := Db.Exec(query, userID, productID)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func GetUserProductHistory(userID int) ([]model.ShowProduct, error) {
+	query := "SELECT products.* FROM products,product_view_history WHERE products.id=product_view_history.product_id AND product_view_history.user_id=?"
+	rows, err := Db.Query(query, userID)
+	if err != nil {
+		return nil, err
+	}
+	var products []model.ShowProduct
+	for rows.Next() {
+		var product model.ShowProduct
+		err = rows.Scan(&product.ID, &product.Name, &product.Description, &product.Price, &product.Stock, &product.CategoryID,
+			&product.Popularity, &product.AveRating, &product.ProductImage, &product.CreatedAt, &product.UpdatedAt)
+		if err != nil {
+			return nil, err
+		}
+		products = append(products, product)
+	}
+	if len(products) == 0 { //如果没有商品
+		return nil, respond.EmptyProductList
+	}
+	return products, nil
+}

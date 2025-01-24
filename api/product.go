@@ -220,5 +220,32 @@ func ShowSingleProduct(ctx context.Context, c *app.RequestContext) {
 			return
 		}
 	}
+	//3.增加用户浏览记录
+	intUserID := int(c.GetFloat64("user_id"))
+	if intUserID != 0 {
+		err = service.AddUserProductHistory(intUserID, int(intID))
+		if err != nil {
+			c.JSON(consts.StatusInternalServerError, respond.InternalError(err))
+		}
+	}
+	// 4.返回商品信息
 	c.JSON(consts.StatusOK, respond.Respond(respond.Ok, product))
+}
+
+func ShowUserViewProductHistory(ctx context.Context, c *app.RequestContext) {
+	// 1.从请求中获取用户id
+	userID := int(c.GetFloat64("user_id"))
+	// 2.调用service层函数
+	products, err := service.ShowUserProductHistory(userID)
+	if err != nil {
+		switch {
+		case errors.Is(err, respond.WrongUserID), errors.Is(err, respond.EmptyProductList):
+			c.JSON(consts.StatusNotFound, err)
+			return
+		default:
+			c.JSON(consts.StatusInternalServerError, respond.InternalError(err))
+			return
+		}
+	}
+	c.JSON(consts.StatusOK, respond.Respond(respond.Ok, products))
 }
