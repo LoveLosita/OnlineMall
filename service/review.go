@@ -6,6 +6,7 @@ import (
 	"OnlineMall/model"
 	"OnlineMall/respond"
 	"OnlineMall/utils"
+	"math/rand"
 )
 
 func RatingAndReviewProduct(review model.AddReview) error {
@@ -136,6 +137,9 @@ func BuildReviewTree(productID int) ([]model.ShowReview, error) { //构建评论
 		if reviews[i].ParentID != nil { //如果有父评论
 			for j := 0; j < i; j++ { //寻找父评论
 				if *reviews[i].ParentID == reviews[j].ID { //如果找到了父评论
+					if reviews[i].ISAnonymous {
+						reviews[i].UserID = rand.Intn(9000) + 1000 //随机生成一个用户ID,因为是匿名评论
+					}
 					reviews[j].Replies = append(reviews[j].Replies, reviews[i]) //将子评论添加到父评论的Replies中
 					break
 				}
@@ -145,6 +149,9 @@ func BuildReviewTree(productID int) ([]model.ShowReview, error) { //构建评论
 	var resultList []model.ShowReview //定义一个评论列表
 	for _, review := range reviews {  //遍历评论
 		if review.ParentID == nil { //如果没有父评论
+			if review.ISAnonymous {
+				review.UserID = rand.Intn(9000) + 1000 //随机生成一个用户ID,因为是匿名评论
+			}
 			resultList = append(resultList, review) //将评论添加到评论列表中
 		}
 	}
@@ -179,6 +186,9 @@ func BuildReviewTree2(productID int, keyword string, handlerID int) ([]model.Sho
 		if reviews[i].ParentID != nil { //如果有父评论
 			for j := 0; j < i; j++ { //寻找父评论
 				if *reviews[i].ParentID == reviews[j].ID { //如果找到了父评论
+					if reviews[i].ISAnonymous {
+						reviews[i].UserID = rand.Intn(9000) + 1000 //随机生成一个用户ID,因为是匿名评论
+					}
 					reviews[j].Replies = append(reviews[j].Replies, reviews[i]) //将子评论添加到父评论的Replies中
 					appendSlice = append(appendSlice, reviews[i].ID)            //将子评论的ID添加到appendSlice中
 					break
@@ -189,6 +199,9 @@ func BuildReviewTree2(productID int, keyword string, handlerID int) ([]model.Sho
 	var resultList []model.ShowReview //定义一个评论列表
 	for _, review := range reviews {  //遍历评论
 		if review.ParentID == nil || !utils.InIntSlice(appendSlice, review.ID) { //如果没有父评论或者ID不在appendSlice中
+			if review.ISAnonymous {
+				review.UserID = rand.Intn(9000) + 1000 //随机生成一个用户ID,因为是匿名评论
+			}
 			resultList = append(resultList, review) //将评论添加到评论列表中
 		}
 	}

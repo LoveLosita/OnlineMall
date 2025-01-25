@@ -6,8 +6,8 @@ import (
 )
 
 func AddReviewOrReply(review model.AddReview) error {
-	query := "INSERT INTO reviews(user_id,product_id,parent_id,rating,comment) VALUES(?,?,?,?,?)"
-	_, err := Db.Exec(query, review.UserID, review.ProductID, review.ParentID, review.Rating, review.Comment)
+	query := "INSERT INTO reviews(user_id,product_id,parent_id,rating,comment,is_anonymous) VALUES(?,?,?,?,?,?)"
+	_, err := Db.Exec(query, review.UserID, review.ProductID, review.ParentID, review.Rating, review.Comment, review.ISAnonymous)
 	if err != nil {
 		return err
 	}
@@ -76,7 +76,7 @@ func GetAProductReviews(productID int) ([]model.ShowReview, error) {
 	for rows.Next() { //遍历所有获取的评论
 		var review model.ShowReview
 		err = rows.Scan(&review.ID, &review.UserID, &review.ProductID, &review.ParentID, &review.Rating,
-			&review.Comment, &review.CreatedAt, &review.UpdatedAt)
+			&review.Comment, &review.ISAnonymous, &review.CreatedAt, &review.UpdatedAt)
 		if err != nil {
 			return nil, err
 		}
@@ -85,7 +85,7 @@ func GetAProductReviews(productID int) ([]model.ShowReview, error) {
 	for rows2.Next() { //遍历所有获取的评论
 		var review model.ShowReview
 		err = rows2.Scan(&review.ID, &review.UserID, &review.ProductID, &review.ParentID, &review.Rating,
-			&review.Comment, &review.CreatedAt, &review.UpdatedAt)
+			&review.Comment, &review.ISAnonymous, &review.CreatedAt, &review.UpdatedAt)
 		if err != nil {
 			return nil, err
 		}
@@ -118,7 +118,7 @@ func SearchForProductReviews(productID int, keyword string) ([]model.ShowReview,
 	for rows.Next() { //遍历所有获取的评论
 		var review model.ShowReview
 		err = rows.Scan(&review.ID, &review.UserID, &review.ProductID, &review.ParentID, &review.Rating,
-			&review.Comment, &review.CreatedAt, &review.UpdatedAt)
+			&review.Comment, &review.ISAnonymous, &review.CreatedAt, &review.UpdatedAt)
 		if err != nil {
 			return nil, err
 		}
@@ -127,7 +127,7 @@ func SearchForProductReviews(productID int, keyword string) ([]model.ShowReview,
 	for rows2.Next() { //遍历所有获取的评论
 		var review model.ShowReview
 		err = rows2.Scan(&review.ID, &review.UserID, &review.ProductID, &review.ParentID, &review.Rating,
-			&review.Comment, &review.CreatedAt, &review.UpdatedAt)
+			&review.Comment, &review.ISAnonymous, &review.CreatedAt, &review.UpdatedAt)
 		if err != nil {
 			return nil, err
 		}
@@ -136,7 +136,7 @@ func SearchForProductReviews(productID int, keyword string) ([]model.ShowReview,
 	for rows3.Next() { //遍历所有获取的评论
 		var review model.ShowReview
 		err = rows3.Scan(&review.ID, &review.UserID, &review.ProductID, &review.ParentID, &review.Rating,
-			&review.Comment, &review.CreatedAt, &review.UpdatedAt)
+			&review.Comment, &review.ISAnonymous, &review.CreatedAt, &review.UpdatedAt)
 		if err != nil {
 			return nil, err
 		}
