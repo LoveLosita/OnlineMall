@@ -70,43 +70,6 @@ func ChangeProduct(ctx context.Context, c *app.RequestContext) {
 	c.JSON(consts.StatusOK, respond.Ok)
 }
 
-//func GetProductsInManyWays(ctx context.Context, c *app.RequestContext) {
-//	// 1.从请求中获取商品信息
-//	productID := c.Query("product_id")
-//	keyWord := c.Query("keyword")
-//	categoryID := c.Query("category_id")
-//	//如果没有传入参数，则默认为0
-//	if productID == "" {
-//		productID = "0"
-//	}
-//	if categoryID == "" {
-//		categoryID = "0"
-//	}
-//	intProductID, err := strconv.ParseInt(productID, 10, 0)
-//	if err != nil {
-//		c.JSON(consts.StatusBadRequest, respond.WrongParamType)
-//		return
-//	}
-//	intCategoryID, err := strconv.ParseInt(categoryID, 10, 0)
-//	if err != nil {
-//		c.JSON(consts.StatusBadRequest, respond.WrongParamType)
-//		return
-//	}
-//	//2.调用service层函数
-//	products, err := service.ShowProductInManyWays(int(intProductID), keyWord, int(intCategoryID))
-//	if err != nil {
-//		switch {
-//		case errors.Is(err, respond.CantFindProduct), errors.Is(err, respond.EmptyProductList), errors.Is(err, respond.ErrProductNotExists):
-//			c.JSON(consts.StatusNotFound, err)
-//			return
-//		default:
-//			c.JSON(consts.StatusInternalServerError, respond.InternalError(err))
-//			return
-//		}
-//	}
-//	c.JSON(consts.StatusOK, respond.Respond(respond.Ok, products))
-//}
-
 func DeleteProduct(ctx context.Context, c *app.RequestContext) {
 	handlerID := int(c.GetFloat64("user_id")) //从上下文中获取用户的id
 	// 1.从请求中获取商品id
@@ -240,6 +203,30 @@ func ShowUserViewProductHistory(ctx context.Context, c *app.RequestContext) {
 	if err != nil {
 		switch {
 		case errors.Is(err, respond.WrongUserID), errors.Is(err, respond.EmptyProductList):
+			c.JSON(consts.StatusNotFound, err)
+			return
+		default:
+			c.JSON(consts.StatusInternalServerError, respond.InternalError(err))
+			return
+		}
+	}
+	c.JSON(consts.StatusOK, respond.Respond(respond.Ok, products))
+}
+
+func ShowHomePage(ctx context.Context, c *app.RequestContext) {
+	// 1.从请求中获取用户id
+	userID := int(c.GetFloat64("user_id"))
+	// 2.调用service层函数
+	var products []model.ShowProduct
+	var err error
+	if userID == 0 {
+		products, err = service.SortProduct(1, userID)
+	} else {
+		products, err = service.SortProduct(2, userID)
+	}
+	if err != nil {
+		switch {
+		case errors.Is(err, respond.EmptyProductList):
 			c.JSON(consts.StatusNotFound, err)
 			return
 		default:

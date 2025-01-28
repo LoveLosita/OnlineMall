@@ -18,8 +18,9 @@ func RegisterRouters() {
 	h.GET("/search_products", api.SearchForProducts)
 	h.GET("/show_all_products", api.ShowAllProducts)
 	h.GET("/show_category_products", api.ShowACategoryProducts)
-	h.GET("/view_product", middleware.JWTTokenAuthForProductHistory(), api.ShowSingleProduct)
+	h.GET("/view_product", middleware.JWTTokenAuthTokenNotAMust(), api.ShowSingleProduct)
 	h.GET("/show_product_reviews", api.ShowAProductReviews)
+	h.GET("/homepage", middleware.JWTTokenAuthTokenNotAMust(), api.ShowHomePage)
 
 	userGroup.PUT("/register", api.UserRegister)
 	userGroup.POST("/login", api.UserLogin)

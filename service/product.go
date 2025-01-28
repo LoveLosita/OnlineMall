@@ -5,6 +5,8 @@ import (
 	"OnlineMall/dao"
 	"OnlineMall/model"
 	"OnlineMall/respond"
+	"OnlineMall/utils"
+	"fmt"
 	"math"
 )
 
@@ -150,4 +152,92 @@ func ShowUserProductHistory(userID int) ([]model.ShowProduct, error) {
 	}
 	//2.获取用户浏览记录
 	return dao.GetUserProductHistory(userID) //调用dao层函数
+}
+
+func SortProduct(getMethod int, userID int) ([]model.ShowProduct, error) {
+	//先获取全部商品
+	products, err := dao.ShowAllProducts()
+	if err != nil {
+		return nil, err
+	}
+	if getMethod == 1 { //1.游客访问，按照热度降序排序
+		for i := 0; i < len(products); i++ {
+			for j := 0; j < len(products)-1; j++ {
+				if products[j].Popularity < products[j+1].Popularity {
+					products[j], products[j+1] = products[j+1], products[j]
+				}
+			}
+		}
+		return products, nil
+	} else if getMethod == 2 { //2.用户访问，按照常看程度和内容热度计算后，按照分数降序排序；剩下的没看过的商品再按照热度排序
+		//2.1.获取用户历史记录，接下来以历史记录为基础，和所有商品的热度进行分数计算
+		history, err := dao.GetUserProductHistory(userID)
+		if err != nil {
+			return nil, err
+		}
+		//2.2.调用函数计数历史记录
+		resultMap := CountUserHistory(history)
+		//2.3.转换成列表
+		resultList := utils.MapToSlice(resultMap)
+		//2.4.历史访问次数->排名
+		historyRankList := utils.ListInRankOut(resultList)
+		//2.5.产品热度->排名
+		popRankList := utils.ProductInRankOut(products)
+		//2.6.计算平均排名
+		var scoreList []model.FloatMapToSlice
+		var score float64
+		for i := 0; i < len(historyRankList); i++ {
+			for j := 0; j < len(popRankList); j++ {
+				if popRankList[j].Key == historyRankList[i].Key {
+					score = float64(popRankList[j].Value)*0.5 + float64(historyRankList[i].Value)*0.5
+					scoreList = append(scoreList, model.FloatMapToSlice{Key: popRankList[j].Key, Value: score})
+					fmt.Println(popRankList[j].Key, score)
+				}
+			}
+		}
+		//2.7.根据分数从低到高排序（分数越低的越好）
+		for i := 0; i < len(scoreList); i++ {
+			for j := 0; j < len(scoreList)-1; j++ {
+				if scoreList[j].Value > scoreList[j+1].Value {
+					scoreList[j], scoreList[j+1] = scoreList[j+1], scoreList[j]
+				}
+			}
+		}
+		//2.8.将最终顺序加入产品切片
+		var finalProducts []model.ShowProduct
+		for i := 0; i < len(scoreList); i++ {
+			finalProducts = append(finalProducts, scoreList[i].Key)
+		}
+		//2.9.再把所有商品根据热度排序
+		for i := 0; i < len(products); i++ {
+			for j := 0; j < len(products)-1; j++ {
+				if products[j].Popularity < products[j+1].Popularity {
+					products[j], products[j+1] = products[j+1], products[j]
+				}
+			}
+		}
+		//2.10.再把不在上面的商品加入产品切片
+		for i := 0; i < len(products); i++ {
+			if !utils.InMapSlice(historyRankList, products[i]) {
+				finalProducts = append(finalProducts, products[i])
+			}
+		}
+		//2.11.返回最终结果
+		return finalProducts, nil
+	} else {
+		return nil, fmt.Errorf("wrong get method(sv->product.go->sortProduct)")
+	}
+}
+
+func CountUserHistory(history []model.ShowProduct) map[model.ShowProduct]int { //计数
+	resultMap := make(map[model.ShowProduct]int)
+	for i := 0; i < len(history); i++ {
+		_, exists := resultMap[history[i]]
+		if !exists {
+			resultMap[history[i]] = 1
+		} else {
+			resultMap[history[i]]++
+		}
+	}
+	return resultMap
 }

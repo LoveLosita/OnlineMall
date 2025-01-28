@@ -49,7 +49,7 @@ func JWTTokenAuth() app.HandlerFunc {
 	}
 }
 
-func JWTTokenAuthForProductHistory() app.HandlerFunc {
+func JWTTokenAuthTokenNotAMust() app.HandlerFunc {
 	//这个中间件是用于游客和用户都能访问的接口的,如果登录了，就会把用户id放入上下文，用以记录用户的浏览记录
 	return func(ctx context.Context, c *app.RequestContext) {
 		// 从请求头中获取 Authorization 字段
