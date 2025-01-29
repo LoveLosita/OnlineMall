@@ -1,164 +1,166 @@
-# 1.项目功能（目前版本`1.5.0Beta`）
+# [中文版本(Simplified Chinese version)](readme_zh_cn.md)
 
-本项目类似⼀个商品网站，可以实现以下功能：
+# 1. Project Features (Current Version: `1.5.0Beta`)
 
-- [x] 用户的注册与登录
-- [x] 加密存储用户密码
-- [x] 添加商品分类
-- [x] 修改用户的信息
-- [x] 查询商品
-- [x] 查看商品详情
-- [x] 查看分类下的商品
-- [x] 给商品进行评论（评论的增删查）
-- [x] 商品加入购物车
-- [x] 获取购物车所有商品
-- [x] 搜索购物车中的商品
-- [x] 初级下单（向前端返回⼀个订单order）
-- [ ] 进阶下单（真正影响商品库存并且处理并发）
-- [ ] 终极下单（在进阶下单的基础上模拟微信/支付宝的支付回调等）
-- [x] 嵌套评论
-- [x] 匿名评论
-- [x] 浏览的商品的历史记录
-- [x] 商家和管理员的出现（可以自由增删商品）
-- [ ] 与AI助手的聊天（使用ChatAI接口）
-- [ ] 加入验证码登录的操作（成本有限，可能会研究如何实现2FA）
-- [ ] 使用缓存（Redis缓存）
-- [x] 设计⼀套热度算法，使得能让该用户常看的商品分类下的商品出现在首页
-- [ ] 用户可以与客服进行聊天（可能会用Python实现商家、管理员和用户的客户端，如果有时间的话）
-- [ ] 部署到自己的服务器上，并且可以访问
-- [ ] 考虑安全性（xxs，sql注入，csrf等。sql注入目前是已经可以防御了，因为sql语句中使用的是占位符）
-- [ ] 你任何想加的功能（咕咕咕）
+This project is similar to an e-commerce website and supports the following features:
 
-# 2.项目结构
+- [x]  User registration and login
+- [x]  Encrypted password storage
+- [x]  Adding product categories
+- [x]  Modifying user information
+- [x]  Searching for products
+- [x]  Viewing product details
+- [x]  Viewing products under a specific category
+- [x]  Commenting on products (add, delete, and view comments)
+- [x]  Adding products to the shopping cart
+- [x]  Retrieving all products in the shopping cart
+- [x]  Searching for products in the shopping cart
+- [x]  Basic order placement (returns an `order` object to the frontend)
+- [ ]  Advanced order placement (affects product inventory and handles concurrency)
+- [ ]  Ultimate order placement (simulating WeChat/Alipay payment callbacks based on advanced ordering)
+- [x]  Nested comments
+- [x]  Anonymous comments
+- [x]  Browsing history tracking
+- [x]  Merchant and administrator roles (can freely add or remove products)
+- [ ]  Chat with AI assistant (using the ChatAI API)
+- [ ]  Adding CAPTCHA for login (cost is a concern, may explore implementing 2FA)
+- [ ]  Implementing caching (Redis cache)
+- [x]  Designing a heat algorithm to display frequently viewed product categories on the homepage
+- [ ]  Enabling user-customer service chat (may implement merchant, admin, and user clients using Python if time allows)
+- [ ]  Deploying to a personal server for public access
+- [ ]  Enhancing security (XSS, SQL injection, CSRF, etc.; SQL injection is already prevented by using placeholders in SQL queries)
+- [ ]  Any other features you’d like to add (procrastination mode: ON)
 
-## 2.1.文件结构图
+# 2. Project Structure
+
+## 2.1. File Structure Diagram
 
 ```go
 OnlineMall
 │
-├── api                  // 存放所有的 API 接口定义
-│   ├── auth.go           // 用户认证相关接口
-│   ├── cart.go           // 购物车相关接口
-│   ├── categories.go     // 商品分类相关接口
-│   ├── order.go          // 订单管理相关接口
-│   ├── product.go        // 商品管理相关接口
-│   ├── review.go         // 商品评论相关接口
-│   └── user.go           // 用户管理相关接口
+├── api                  // Stores all API endpoint definitions
+│   ├── auth.go           // User authentication-related APIs
+│   ├── cart.go           // Shopping cart-related APIs
+│   ├── categories.go     // Product category-related APIs
+│   ├── order.go          // Order management-related APIs
+│   ├── product.go        // Product management-related APIs
+│   ├── review.go         // Product review-related APIs
+│   └── user.go           // User management-related APIs
 │
-├── auth                 // 负责身份认证的功能
-│   ├── check_permission.go  // 检查用户权限
-│   └── jwt_generator.go     // 生成和解析 JWT
+├── auth                 // Handles authentication functionality
+│   ├── check_permission.go  // Checks user permissions
+│   └── jwt_generator.go     // Generates and parses JWT tokens
 │
-├── cmd                  // 存放应用启动和初始化的逻辑
-│   └── start.go           // 启动应用并初始化服务
+├── cmd                  // Contains application startup and initialization logic
+│   └── start.go           // Starts the application and initializes services
 │
-├── dao                  // 数据库交互层
-│   ├── db_connection.go  // 负责连接数据库事宜
-│   ├── cart.go           // 购物车数据操作
-│   ├── categories.go     // 商品分类数据操作
-│   ├── order.go          // 订单数据操作
-│   ├── product.go        // 商品数据操作
-│   ├── review.go         // 商品评论数据操作
-│   └── user.go           // 用户数据操作
+├── dao                  // Database access layer
+│   ├── db_connection.go  // Handles database connection
+│   ├── cart.go           // Shopping cart data operations
+│   ├── categories.go     // Product category data operations
+│   ├── order.go          // Order data operations
+│   ├── product.go        // Product data operations
+│   ├── review.go         // Product review data operations
+│   └── user.go           // User data operations
 │
-├── middleware           // 存放中间件，如 token 校验
-│   └── token_handler.go    // 处理 token 校验逻辑
+├── middleware           // Stores middleware, such as token validation
+│   └── token_handler.go    // Handles token validation logic
 │
-├── model                // 存放数据模型
-│   ├── auth.go           // 用户认证模型
-│   ├── cart.go           // 购物车模型
-│   ├── order.go          // 订单模型
-│   ├── products.go       // 商品模型
-│   ├── review.go         // 商品评论模型
-│   ├── user.go           // 用户模型
-│   └── map_to_slice.go   //类似于映射的键值对模型
+├── model                // Stores data models
+│   ├── auth.go           // User authentication model
+│   ├── cart.go           // Shopping cart model
+│   ├── order.go          // Order model
+│   ├── products.go       // Product model
+│   ├── review.go         // Product review model
+│   ├── user.go           // User model
+│   └── map_to_slice.go   // Key-value mapping model
 │
+├── respond              // Handles API response formatting
+│   └── responses.go       // Defines a unified response format
 │
-├── respond              // 返回响应的处理
-│   └── responses.go       // 定义统一的响应格式
+├── routers              // Stores route configurations
+│   └── router.go          // Configures all API routes
 │
-├── routers              // 存放路由配置
-│   └── router.go          // 配置所有 API 路由
+├── service              // Business logic layer
+│   ├── auth.go           // User authentication-related business logic
+│   ├── cart.go           // Shopping cart-related business logic
+│   ├── categories.go     // Product category-related business logic
+│   ├── order.go          // Order-related business logic
+│   ├── product.go        // Product-related business logic
+│   ├── review.go         // Product review-related business logic
+│   └── user.go           // User-related business logic
 │
-├── service              // 业务逻辑层
-│   ├── auth.go           // 用户认证相关业务逻辑
-│   ├── cart.go           // 购物车相关业务逻辑
-│   ├── categories.go     // 商品分类相关业务逻辑
-│   ├── order.go          // 订单相关业务逻辑
-│   ├── product.go        // 商品相关业务逻辑
-│   ├── review.go         // 商品评论相关业务逻辑
-│   └── user.go           // 用户相关业务逻辑
-│
-├── utils                   // 工具函数
-│   ├── if_in.go             // 判断元素是否在序列中的工具函数集
-│   ├── pwd_encryption.go    // 密码加密工具
-│   ├── list_in_rank_out.go  // 传入数值切片，返回每个数值在此切片中的排名
-│   └── map_to_int_slice.go  // 传入映射，传出由自定义键值对构成的结构体的切片
+├── utils                   // Utility functions
+│   ├── if_in.go             // Utility functions for checking element existence in sequences
+│   ├── pwd_encryption.go    // Password encryption utilities
+│   ├── list_in_rank_out.go  // Takes a slice of numbers and returns their ranking
+│   └── map_to_int_slice.go  // Converts a map into a slice of custom key-value structures
 │ 
-├── go.mod               // Go Modules 配置文件
-├── main.go              // 项目的入口文件，在此启动项目
-└── readme.md            // 项目的 README 文件，即本文件
+├── go.mod               // Go Modules configuration file
+├── main.go              // Project entry point, responsible for starting the application
+└── readme.md            // Project README file (this document)
 ```
 
-## 2.2.目录详细说明：
+## 2.2. Directory Details
 
-1. **api**：该文件夹包含了与 API 相关的接口定义，分别涉及到用户认证、购物车管理、商品分类、商品管理、订单处理和评论功能。每个文件对应一个功能模块的 API。
-2. **auth**：处理用户认证相关的逻辑，主要负责 JWT 的生成与验证，确保用户身份的合法性。
-3. **cmd**：包含应用的启动逻辑，`start.go` 是应用启动和初始化的入口，负责加载配置并启动服务。
-4. **dao**：数据访问层，包含与数据库的交互操作，处理数据的增删改查。例如，`cart.go` 文件负责与购物车相关的数据交互，`order.go` 文件负责订单相关的数据操作等。
-5. **middleware**：中间件层，通常用于处理请求前后需要的操作，如验证 token。
-6. **model**：数据模型定义文件，通常与数据库中的表结构相关联。每个文件对应一个模块的数据模型，如 `cart.go` 定义了购物车的结构和属性，`products.go` 定义了商品的结构等。
-7. **respond**：统一的响应格式处理模块，确保 API 返回的数据结构一致，便于前端处理。
-8. **routers**：定义各个 API 路由及其对应的处理函数，管理请求路径和处理逻辑。
-9. **service**：业务逻辑层，封装各个功能模块的具体业务操作，提供更高层次的功能接口。例如，`cart.go` 文件在服务层进行购物车相关的操作。
-10. **utils**：存放工具类函数，如判断条件和密码加密等。
-11. **go.mod**：Go Modules 配置文件，指定项目依赖的外部包和版本。
-12. **main.go**：项目的入口文件，启动应用并进行初始化配置。
-13. **readme.md**：项目的` README` 文件，提供项目的基本信息、使用说明和技术栈等。
+1. **api**: Contains API definitions for different functionalities such as user authentication, shopping cart management, product categories, product management, order processing, and reviews. Each file corresponds to a specific module.
+2. **auth**: Handles user authentication logic, primarily focusing on JWT generation and validation to ensure user identity legitimacy.
+3. **cmd**: Contains the application's startup logic. `start.go` serves as the main entry point, responsible for loading configurations and launching the service.
+4. **dao**: Data access layer, responsible for database interactions, including CRUD operations. For example, `cart.go` handles shopping cart-related database operations, while `order.go` manages order-related database operations.
+5. **middleware**: Middleware layer, typically used for request pre-processing, such as token validation.
+6. **model**: Defines data models that map to database tables. Each file represents a specific module's data structure, such as `cart.go` for the shopping cart model and `products.go` for the product model.
+7. **respond**: Handles unified API response formatting, ensuring consistency in API return structures for easier frontend processing.
+8. **routers**: Defines API routes and their corresponding handlers, managing request paths and logic.
+9. **service**: Business logic layer that encapsulates core functionalities. For example, `cart.go` in the service layer handles shopping cart operations.
+10. **utils**: Stores utility functions such as element checking and password encryption.
+11. **go.mod**: Go Modules configuration file that specifies project dependencies and versions.
+12. **main.go**: The main entry point of the project, responsible for initializing configurations and starting the application.
+13. **readme.md**: The project's README file, providing basic information, usage instructions, and technology stack details.
+14. **readme_zh_cn.md**: Simplified Chinese version of the` README` file (which is also the original version).
 
-#  3.状态码的定义
+# 3. Definition of Status Codes
 
-| 状态码 | HTTP状态码 |         描述          |                             原因                             |                           解决方案                           |
-| :----: | :--------: | :-------------------: | :----------------------------------------------------------: | :----------------------------------------------------------: |
-| 20000  |    200     |         成功          |                              -                               |                              -                               |
-| 40001  |    401     |      用户名错误       |   登录时，传入的用户名参数错误，在数据库中找不到匹配的用户   |                       传入正确的用户名                       |
-| 40002  |    401     |       密码错误        |     登录时，传入的密码参数错误，无法和数据库中现存的匹配     |                        传入正确的密码                        |
-| 40003  |    400     |      用户名无效       |           注册时，传入的用户名在数据库中已经存在了           |                       传入唯一的用户名                       |
-| 40004  |    400     |       缺少参数        |                传入的参数数量小于所要求的数量                |                         传入足够参数                         |
-| 40005  |    400     |     参数类型错误      |           传入的参数类型错误，导致无法和结构体绑定           |                         传入正确参数                         |
-| 40006  |    400     |       参数过长        |                   传入的某个参数长度过于长                   |                      缩短过长参数的长度                      |
-| 40007  |    400     |   用户名或密码错误    |                   传入的用户名或者密码错误                   |                    传入正确的用户名或密码                    |
-| 40008  |    400     |       性别错误        |     传入的性别不属于（"male","female","other"）中的一种      |                        传入其中的一种                        |
-| 40009  |    401     |       缺少token       |                    Header中未填写JWT key                     |                        在Header中填写                        |
-| 40010  |    401     | jwt token签名方法无效 |                       JWT key格式错误                        |                     传入正确的JWT token                      |
-| 40011  |    401     |       无效token       |                        JWT token无效                         |                     传入正确的JWT token                      |
-| 40012  |    401     |       无效声明        |                     JWT token的声明无效                      |                     传入正确的JWT token                      |
-| 40013  |    400     |   传入的用户id无效    |             在执行通过id查找用户信息时没找到用户             |                       传入正确的用户id                       |
-| 40014  |    401     |       权限不够        |                    用户不是管理员或者店主                    |                 让管理员或者店主来执行此操作                 |
-| 40015  |    404     |      分类不存在       |         在添加商品的时候，没有找到分类id所对应的分类         |                       传入正确的分类id                       |
-| 40016  |    400     |   分类名称已经存在    |            在添加分类时，填写了一个重复的分类名称            |                传入不和现有分类重复的分类名称                |
-| 40017  |    404     |      商品不存在       |              尝试通过ID找商品，但是不存在该商品              |                       传入存在商品的ID                       |
-| 40018  |    404     |      找不到商品       |                  通过关键字搜索无法找到商品                  |                     传入存在商品的关键字                     |
-| 40019  |    404     |     商品列表为空      |      在显示全部商品/显示某个分类的商品时，商品列表为空       |  前者，请先添加商品再进行其他操作；后者，请传入正确的分类id  |
-| 40020  |    401     |   Refresh Token无效   | 在尝试通过刷新令牌接口刷新Access Token时，传入了无效的Refresh Token | 传入有效的Refresh Token。如果Refresh Token也过期了，就重新登录 |
-| 40021  |    400     |  商品已经在购物车中   | 在尝试将一定数量的某商品加入购物车时，购物车里面已经有相同数量的同一个商品 |   如果是想更新数量，请传入数量不同的该商品；否则就换个商品   |
-| 40022  |    400     |       数量太大        |    在尝试下单或者将商品加入购物车时，传入的数量超过了999     |                     请传入小于999的数量                      |
-| 50001  |    500     |      订单不存在       | 在检查该用户是否购买了此商品时，订单表单和商品表单不匹配，属于内部错误 |                              -                               |
-| 40024  |    400     | 用户没有购买过此商品  |        在用户尝试评论该商品时，发现用户没购买过此商品        |                     请购买此商品后再评论                     |
-| 40025  |    400     |   用户已经评论过了    |       在用户尝试评论该商品时，系统发现用户已经评论过了       |                         请勿重复评论                         |
-| 40026  |    400     |   用户打分超出范围    |                 用户的打分超出了1-5分的范围                  |                 请将对商品的分数打在此范围内                 |
-| 40027  |    400     |   用户评论字数过长    |                用户在评论商品时，评论字数过长                |                      请用户缩短评论字数                      |
-| 40028  |    400     |     父评论不存在      |          在用户尝试回复评论时，传入的父评论id不存在          |                     请传入存在的父评论id                     |
-| 40029  |    404     |      购物车为空       |        在用户请求展示购物车全部商品时，购物车中无商品        |                      请先添加商品再展示                      |
-| 40030  |    404     |     商品评论为空      |            在用户尝试查看某商品下评论时，评论为空            |                      请先评论再获取评论                      |
-| 40031  |    404     |      找不到评论       | 在商家通过关键词搜索某商品下的评论时，没有找到符合要求的评论 |                         请更换关键词                         |
-| 40032  |    404     |      评论不存在       |   在传入评论id需要进行查询/删除操作时，没有找到该id的评论    |                      请传入正确的评论id                      |
+| Status Code | HTTP Status Code | Description                         | Reason                                                       | Solution                                                     |
+| ----------- | ---------------- | ----------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
+| 20000       | 200              | Success                             | -                                                            | -                                                            |
+| 40001       | 401              | Incorrect Username                  | The username provided during login is incorrect and does not match any user in the database. | Provide the correct username.                                |
+| 40002       | 401              | Incorrect Password                  | The password provided during login is incorrect and does not match the existing records in the database. | Provide the correct password.                                |
+| 40003       | 400              | Invalid Username                    | The username provided during registration already exists in the database. | Provide a unique username.                                   |
+| 40004       | 400              | Missing Parameters                  | The number of parameters provided is less than required.     | Provide the required parameters.                             |
+| 40005       | 400              | Incorrect Parameter Type            | The parameter type provided is incorrect, preventing it from binding to the structure. | Provide the correct parameter type.                          |
+| 40006       | 400              | Parameter Too Long                  | A parameter provided exceeds the allowed length.             | Shorten the parameter length.                                |
+| 40007       | 400              | Incorrect Username or Password      | The provided username or password is incorrect.              | Provide the correct username or password.                    |
+| 40008       | 400              | Invalid Gender                      | The provided gender is not one of ("male", "female", "other"). | Provide one of the valid options.                            |
+| 40009       | 401              | Missing Token                       | The JWT key is missing in the request header.                | Include the JWT key in the header.                           |
+| 40010       | 401              | Invalid JWT Signature Method        | The JWT key format is incorrect.                             | Provide a valid JWT token.                                   |
+| 40011       | 401              | Invalid Token                       | The JWT token is invalid.                                    | Provide a valid JWT token.                                   |
+| 40012       | 401              | Invalid Claims                      | The claims in the JWT token are invalid.                     | Provide a valid JWT token.                                   |
+| 40013       | 400              | Invalid User ID                     | The user ID provided for querying user information does not exist. | Provide a valid user ID.                                     |
+| 40014       | 401              | Insufficient Permissions            | The user is neither an administrator nor a store owner.      | Have an administrator or store owner perform this action.    |
+| 40015       | 404              | Category Not Found                  | The category ID provided when adding a product does not exist. | Provide a valid category ID.                                 |
+| 40016       | 400              | Category Name Already Exists        | A duplicate category name was provided when adding a category. | Provide a unique category name.                              |
+| 40017       | 404              | Product Not Found                   | Attempted to find a product by ID, but the product does not exist. | Provide a valid product ID.                                  |
+| 40018       | 404              | Product Not Found                   | No product was found when searching by keyword.              | Provide an existing product keyword.                         |
+| 40019       | 404              | Product List is Empty               | The product list is empty when displaying all products or a specific category. | If displaying all products, add products first. If filtering by category, provide a valid category ID. |
+| 40020       | 401              | Invalid Refresh Token               | The provided refresh token is invalid when trying to refresh the access token. | Provide a valid refresh token. If expired, log in again.     |
+| 40021       | 400              | Product Already in Cart             | The same product with the same quantity is already in the cart when trying to add it again. | If updating quantity, provide a different quantity; otherwise, choose another product. |
+| 40022       | 400              | Quantity Too Large                  | The quantity provided when placing an order or adding a product to the cart exceeds 999. | Provide a quantity less than 999.                            |
+| 50001       | 500              | Order Not Found                     | Internal error: order and product records do not match when verifying a purchase. | -                                                            |
+| 40024       | 400              | User Has Not Purchased This Product | The user attempted to review a product they have not purchased. | Purchase the product before leaving a review.                |
+| 40025       | 400              | User Already Reviewed               | The user attempted to review a product they have already reviewed. | Do not submit duplicate reviews.                             |
+| 40026       | 400              | Rating Out of Range                 | The user provided a rating outside the 1-5 range.            | Provide a rating within the valid range.                     |
+| 40027       | 400              | Review Too Long                     | The user's review exceeds the allowed character limit.       | Shorten the review text.                                     |
+| 40028       | 400              | Parent Comment Not Found            | The parent comment ID provided when replying to a comment does not exist. | Provide a valid parent comment ID.                           |
+| 40029       | 404              | Shopping Cart is Empty              | The user requested to display all items in the cart, but the cart is empty. | Add items to the cart before displaying.                     |
+| 40030       | 404              | No Product Reviews                  | The user attempted to view reviews for a product, but no reviews exist. | Submit a review before retrieving reviews.                   |
+| 40031       | 404              | No Matching Reviews                 | No reviews matching the search keyword were found when searching for product reviews. | Use a different keyword.                                     |
+| 40032       | 404              | Review Not Found                    | The review ID provided for query or deletion does not exist. | Provide a valid review ID.                                   |
 
-# 4.通用错误的返回示例
+# 4. General Error Response Examples
 
-项目返回的一些错误是通用性的，所以我仅仅在项目初期的`apifox`接口文档编写中保存了其示例，在后期便没有再保存示例。在此，我将这些错误的示例列出，原因请自行查阅上方表格：
+Some errors returned by the project are generic, so I only saved their examples in the `apifox` API documentation during the early stages of the project. Later, I did not keep examples. Here, I list these error examples, and you can refer to the table above for their reasons:
 
-## 4.1.未登录
+## 4.1. Not Logged In
 
 ```json
 {
@@ -167,7 +169,7 @@ OnlineMall
 }
 ```
 
-## 4.2.jwt token签名方法无效
+## 4.2. Invalid JWT Token Signing Method
 
 ```json
 {
@@ -176,7 +178,7 @@ OnlineMall
 }
 ```
 
-## 4.3.无效Token/Token过期
+## 4.3. Invalid Token / Token Expired
 
 ```json
 {
@@ -185,7 +187,7 @@ OnlineMall
 }
 ```
 
-## 4.4.Token的声明(claim)无效
+## 4.4. Invalid Token Claims
 
 ```json
 {
@@ -194,7 +196,7 @@ OnlineMall
 }
 ```
 
-## 4.5.权限不足
+## 4.5. Insufficient Permissions
 
 ```json
 {
@@ -203,7 +205,7 @@ OnlineMall
 }
 ```
 
-## 4.6.缺少参数
+## 4.6. Missing Parameters
 
 ```json
 {
@@ -212,7 +214,7 @@ OnlineMall
 }
 ```
 
-## 4.7.参数类型错误
+## 4.7. Incorrect Parameter Type
 
 ```json
 {
@@ -221,7 +223,7 @@ OnlineMall
 }
 ```
 
-## 4.8.参数过长
+## 4.8. Parameter Too Long
 
 ```json
 {
@@ -230,10 +232,20 @@ OnlineMall
 }
 ```
 
-# 5.启动项目
+# 5. Starting the Project
 
-确保本地有最新版本的go环境，并且项目已经被完整的下载到了本地。
+Ensure that you have the latest version of the Go environment installed locally and that the project has been fully downloaded to your local machine.
 
-首先，在`OnlineMall`项目主文件夹下的终端里执行：`go mod tidy`来下载和整理依赖。
+First, in the terminal within the main folder of the `OnlineMall` project, run:
 
-然后再执行`go run main.go`来启动项目。
+```sh
+go mod tidy
+```
+
+This will download and organize dependencies.
+
+Then, start the project by running:
+
+```sh
+go run main.go
+```
