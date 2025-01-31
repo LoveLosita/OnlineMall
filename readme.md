@@ -100,7 +100,8 @@ OnlineMall
 │ 
 ├── go.mod               // Go Modules configuration file
 ├── main.go              // Project entry point, responsible for starting the application
-└── readme.md            // Project README file (this document)
+├── readme.md            // Project README file (this document)
+└── readme_zh_cn.md      // Project README file (Simplified Chinese version)
 ```
 
 ## 2.2. Directory Details

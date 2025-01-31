@@ -99,7 +99,8 @@ OnlineMall
 │ 
 ├── go.mod               // Go Modules 配置文件
 ├── main.go              // 项目的入口文件，在此启动项目
-└── readme.md            // 项目的 README 文件，即本文件
+├── readme.md            // 项目的 README 文件的英文版本
+└── readme_zh_cn.md      // 项目的 README 文件的中文版本 (本文件)
 ```
 
 ## 2.2.目录详细说明：
