@@ -2,7 +2,7 @@
 
 # [接口文档(Api docs)](https://g4kfvgyyq7.apifox.cn)
 
-# 1. Project Features (Current Version: `1.5.0Beta`)
+# 1. Project Features (Current Version: `1.5.3Beta`)
 
 This project is similar to an e-commerce website and supports the following features:
 
@@ -120,6 +120,59 @@ OnlineMall
 13. **readme.md**: The project's README file, providing basic information, usage instructions, and technology stack details.
 14. **readme_zh_cn.md**: Simplified Chinese version of the` README` file (which is also the original version).
 
+## 2.3. `MySQL` Table Structure
+
+### 2.3.1. Structure Diagram
+
+![Structure Diagram](mysql_struct.jpg)
+
+### 2.3.2. Structure Description
+
+1. `users` (User Table)
+   - Acts as the core table, storing basic information about users.
+   - Other tables (such as `orders`, `carts`, `reviews`, `product_view_history`) are associated with users.
+2. `products` (Product Table)
+   - Stores detailed information about products.
+   - Associated with the `categories` table (a product belongs to a category).
+   - Associated with the `reviews` table (users can review products).
+   - Associated with the `product_view_history` table (records the user's browsing history).
+3. `categories` (Product Category Table)
+   - Stores category information for products.
+   - Linked to the `products` table through `category_id`.
+4. `carts` (Shopping Cart Table)
+   - Linked to the `users` table (each user has one cart).
+   - Stores the products added to the cart by the user (usually associated with `product_id` from the `products` table).
+5. `orders` (Order Table)
+   - Linked to the `users` table (a user can have multiple orders).
+   - Linked to the `order_items` table (an order contains multiple products).
+6. `order_items` (Order Item Table)
+   - Linked to the `orders` table (an order contains multiple items).
+   - Linked to the `products` table (records the specific product information in the order).
+7. `reviews` (Product Review Table)
+   - Linked to the `users` table (reviews are submitted by users).
+   - Linked to the `products` table (reviews are for a specific product).
+8. `product_view_history` (Product View History Table)
+   - Linked to the `users` table (records the user's browsing history).
+   - Linked to the `products` table (stores the products viewed by the user).
+
+### 2.3.3. Structure Summary
+
+- One-to-Many:
+
+  - One `users` can correspond to multiple `orders` (a user can have multiple orders).
+  - One `orders` can correspond to multiple `order_items` (an order can contain multiple products).
+  - One `products` can correspond to multiple `reviews` (a product can have multiple reviews).
+  - One `users` can correspond to multiple `reviews` (a user can write multiple reviews).
+  - One `categories` can correspond to multiple `products` (a category can have multiple products).
+  - One `users` can correspond to multiple `product_view_history` (a user can have multiple view records).
+
+- Many-to-Many
+
+   (implemented through junction tables):
+
+  - `orders` and `products` have a many-to-many relationship (through `order_items`).
+  - `users` and `products` have a many-to-many relationship in `carts` (a user can add multiple products to the cart, and each product can be added to the cart by multiple users).
+
 # 3. Definition of Status Codes
 
 | Status Code | HTTP Status Code | Description                         | Reason                                                       | Solution                                                     |
@@ -234,20 +287,141 @@ Some errors returned by the project are generic, so I only saved their examples 
 }
 ```
 
-# 5. Starting the Project
+# 5. Using the Project
 
-Ensure that you have the latest version of the Go environment installed locally and that the project has been fully downloaded to your local machine.
+## 5.1. Configure the Database
 
-First, in the terminal within the main folder of the `OnlineMall` project, run:
+Please create a `mysql` database named `OnlineMall` with the password set to `123456`.
 
-```sh
+Then, create the 8 tables as described in section `2.3.2.Structure Description` above, using the following statements. **Create them one by one, in order**:
+
+```mysql
+CREATE TABLE `users` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `full_name` varchar(100) DEFAULT NULL,
+  `phone_number` varchar(20) DEFAULT NULL,
+  `nickname` varchar(50) DEFAULT NULL,
+  `qq` varchar(20) DEFAULT NULL,
+  `avatar` varchar(255) DEFAULT NULL,
+  `gender` enum('male','female','other') DEFAULT 'other',
+  `bio` text,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `role` enum('user','merchant','admin') NOT NULL DEFAULT 'user',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`)
+)
+```
+
+```mysql
+CREATE TABLE `categories` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL,
+  `description` text,
+  PRIMARY KEY (`id`)
+)
+```
+
+```mysql
+CREATE TABLE `products` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `description` text,
+  `price` decimal(10,2) NOT NULL,
+  `stock` int NOT NULL DEFAULT '0',
+  `category_id` int DEFAULT NULL,
+  `popularity` int DEFAULT '0',
+  `ave_rating` decimal(3,2) DEFAULT '0.00',
+  `product_image` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `category_id` (`category_id`),
+  CONSTRAINT `products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`)
+)
+```
+
+```mysql
+ CREATE TABLE `orders` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `order_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `status` enum('pending','completed','canceled') NOT NULL DEFAULT 'pending',
+  `total_price` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `address` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+)
+```
+
+```mysql
+CREATE TABLE `order_items` (
+  `item_id` int NOT NULL AUTO_INCREMENT,
+  `order_id` int NOT NULL,
+  `product_id` int NOT NULL,
+  `quantity` int NOT NULL,
+  `price` decimal(10,2) NOT NULL,
+  PRIMARY KEY (`item_id`),
+  KEY `order_id` (`order_id`),
+  KEY `product_id` (`product_id`),
+  CONSTRAINT `order_items_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`),
+  CONSTRAINT `order_items_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
+)
+```
+
+```mysql
+ CREATE TABLE `reviews` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `product_id` int NOT NULL,
+  `parent_id` int DEFAULT NULL,
+  `rating` int NOT NULL,
+  `comment` text,
+  `is_anonymous` tinyint(1) DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  KEY `product_id` (`product_id`),
+  KEY `parent_id` (`parent_id`),
+  CONSTRAINT `reviews_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `reviews_ibfk_3` FOREIGN KEY (`parent_id`) REFERENCES `reviews` (`id`),
+  CONSTRAINT `reviews_chk_1` CHECK (((`rating` = -(1)) or ((`rating` >= 1) and (`rating` <= 5))))
+)
+```
+
+```mysql
+CREATE TABLE `carts` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `product_id` int NOT NULL,
+  `quantity` int NOT NULL DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  KEY `product_id` (`product_id`),
+  CONSTRAINT `carts_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `carts_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
+)
+```
+
+## 5.2. Start the Project
+
+After deploying the project locally, run the following command in the terminal at the project root directory:
+
+```bash
 go mod tidy
 ```
 
-This will download and organize dependencies.
+This will tidy up the dependencies. Then, run:
 
-Then, start the project by running:
-
-```sh
+```bash
 go run main.go
 ```
+
+This will start the project.

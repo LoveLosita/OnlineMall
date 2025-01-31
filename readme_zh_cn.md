@@ -1,6 +1,6 @@
 # [接口文档(Api docs)](https://g4kfvgyyq7.apifox.cn)
 
-# 1.项目功能（目前版本`1.5.0Beta`）
+# 1.项目功能（目前版本`1.5.3Beta`）
 
 本项目类似⼀个商品网站，可以实现以下功能：
 
@@ -119,6 +119,54 @@ OnlineMall
 13. **readme.md**：项目的` README` 文件的英文版本，提供项目的基本信息、使用说明和技术栈等。
 14. **readme_zh_cn.md**: 本文件。
 
+## 2.3.`MySql`表单结构
+
+### 2.3.1.结构图
+
+![结构图](mysql_struct.jpg)
+
+### 2.3.2.结构说明
+
+1. **`users`（用户表）**
+   - 作为核心表，存储用户的基本信息。
+   - 其他表（如 `orders`、`carts`、`reviews`、`product_view_history`）都会与用户关联。
+2. **`products`（商品表）**
+   - 存储商品的详细信息。
+   - 关联 `categories` 表（一个商品属于一个分类）。
+   - 关联 `reviews` 表（用户可以对商品进行评论）。
+   - 关联 `product_view_history`（记录用户的浏览历史）。
+3. **`categories`（商品分类表）**
+   - 存储商品的类别信息。
+   - 通过 `category_id` 关联到 `products` 表。
+4. **`carts`（购物车表）**
+   - 关联 `users` 表（一个用户有一个购物车）。
+   - 存储用户添加到购物车的商品（通常有 `product_id` 关联到 `products`）。
+5. **`orders`（订单表）**
+   - 关联 `users` 表（一个用户可以有多个订单）。
+   - 关联 `order_items` 表（一个订单包含多个商品）。
+6. **`order_items`（订单商品表）**
+   - 关联 `orders`（一个订单包含多个商品）。
+   - 关联 `products`（记录该订单中的具体商品信息）。
+7. **`reviews`（商品评论表）**
+   - 关联 `users`（评论是由用户提交的）。
+   - 关联 `products`（评论是针对某个商品的）。
+8. **`product_view_history`（商品浏览历史表）**
+   - 关联 `users`（记录用户的浏览记录）。
+   - 关联 `products`（存储用户浏览过的商品）。
+
+### 2.3.3.结构总结
+
+- **一对多**：
+  - 一个 `users` 对应多个 `orders`（一个用户可以有多个订单）。
+  - 一个 `orders` 对应多个 `order_items`（一个订单可以有多个商品）。
+  - 一个 `products` 对应多个 `reviews`（一个商品可以有多个评论）。
+  - 一个 `users` 对应多个 `reviews`（一个用户可以写多个评论）。
+  - 一个 `categories` 对应多个 `products`（一个分类下有多个商品）。
+  - 一个 `users` 对应多个 `product_view_history`（一个用户有多个浏览记录）。
+- **多对多**（通过中间表实现）：
+  - `orders` 和 `products` 是多对多关系（通过 `order_items` 关联）。
+  - `users` 和 `products` 在 `carts` 里形成多对多（一个用户可以添加多个商品，每个商品也可以被多个用户添加到购物车）。
+
 #  3.状态码的定义
 
 | 状态码 | HTTP状态码 |         描述          |                             原因                             |                           解决方案                           |
@@ -233,10 +281,141 @@ OnlineMall
 }
 ```
 
-# 5.启动项目
+# 5.使用项目
 
-确保本地有最新版本的go环境，并且项目已经被完整的下载到了本地。
+## 5.1.配置数据库
 
-首先，在`OnlineMall`项目主文件夹下的终端里执行：`go mod tidy`来下载和整理依赖。
+请你创建名为`OnlineMall`的`mysql`数据库，设置密码为`123456`。
 
-然后再执行`go run main.go`来启动项目。
+然后再创建如上方`2.3.2.结构说明`处的8张表单，使用如下语句，**按顺序**一一创建：
+
+```mysql
+CREATE TABLE `users` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `username` varchar(50) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `full_name` varchar(100) DEFAULT NULL,
+  `phone_number` varchar(20) DEFAULT NULL,
+  `nickname` varchar(50) DEFAULT NULL,
+  `qq` varchar(20) DEFAULT NULL,
+  `avatar` varchar(255) DEFAULT NULL,
+  `gender` enum('male','female','other') DEFAULT 'other',
+  `bio` text,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  `role` enum('user','merchant','admin') NOT NULL DEFAULT 'user',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`)
+)
+```
+
+```mysql
+CREATE TABLE `categories` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL,
+  `description` text,
+  PRIMARY KEY (`id`)
+)
+```
+
+```mysql
+CREATE TABLE `products` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `description` text,
+  `price` decimal(10,2) NOT NULL,
+  `stock` int NOT NULL DEFAULT '0',
+  `category_id` int DEFAULT NULL,
+  `popularity` int DEFAULT '0',
+  `ave_rating` decimal(3,2) DEFAULT '0.00',
+  `product_image` varchar(255) DEFAULT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `category_id` (`category_id`),
+  CONSTRAINT `products_ibfk_1` FOREIGN KEY (`category_id`) REFERENCES `categories` (`id`)
+)
+```
+
+```mysql
+ CREATE TABLE `orders` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `order_date` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `status` enum('pending','completed','canceled') NOT NULL DEFAULT 'pending',
+  `total_price` decimal(10,2) NOT NULL DEFAULT '0.00',
+  `address` varchar(255) NOT NULL,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  CONSTRAINT `orders_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`)
+)
+```
+
+```mysql
+CREATE TABLE `order_items` (
+  `item_id` int NOT NULL AUTO_INCREMENT,
+  `order_id` int NOT NULL,
+  `product_id` int NOT NULL,
+  `quantity` int NOT NULL,
+  `price` decimal(10,2) NOT NULL,
+  PRIMARY KEY (`item_id`),
+  KEY `order_id` (`order_id`),
+  KEY `product_id` (`product_id`),
+  CONSTRAINT `order_items_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `orders` (`id`),
+  CONSTRAINT `order_items_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
+)
+```
+
+```mysql
+ CREATE TABLE `reviews` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `product_id` int NOT NULL,
+  `parent_id` int DEFAULT NULL,
+  `rating` int NOT NULL,
+  `comment` text,
+  `is_anonymous` tinyint(1) DEFAULT '0',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  KEY `product_id` (`product_id`),
+  KEY `parent_id` (`parent_id`),
+  CONSTRAINT `reviews_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `reviews_ibfk_3` FOREIGN KEY (`parent_id`) REFERENCES `reviews` (`id`),
+  CONSTRAINT `reviews_chk_1` CHECK (((`rating` = -(1)) or ((`rating` >= 1) and (`rating` <= 5))))
+)
+```
+
+```mysql
+CREATE TABLE `carts` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int NOT NULL,
+  `product_id` int NOT NULL,
+  `quantity` int NOT NULL DEFAULT '1',
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `user_id` (`user_id`),
+  KEY `product_id` (`product_id`),
+  CONSTRAINT `carts_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`),
+  CONSTRAINT `carts_ibfk_2` FOREIGN KEY (`product_id`) REFERENCES `products` (`id`)
+)
+```
+
+## 5.2.启动项目
+
+将项目部署在本地后，在项目根目录的终端中运行：
+
+```bash
+go mod tidy
+```
+
+以整理依赖。然后，再运行：
+
+```bash
+go run main.go
+```
+
+即可启动项目。
