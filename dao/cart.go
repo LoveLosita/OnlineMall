@@ -27,24 +27,6 @@ func IfProductExistsInYourCart(productID int, userID int) (bool, error) { //检�
 	}
 }
 
-//func GetUserCart(userID int) ([]model.ProductInCart, error) { //获取用户购物车全部商品
-//	query := "SELECT * FROM carts WHERE user_id=?"
-//	rows, err := Db.Query(query, userID)
-//	if err != nil {
-//		return nil, err
-//	}
-//	var products []model.ProductInCart
-//	for rows.Next() {
-//		var product model.ProductInCart
-//		err = rows.Scan(&product.ID, &product.UserID, &product.ProductID, &product.Quantity)
-//		if err != nil {
-//			return nil, err
-//		}
-//		products = append(products, product)
-//	}
-//	return products, nil
-//}
-
 func GetSingleProductInCart(userID, productID int) (model.ProductInCart, error) { //获取购物车中单个商品
 	query := "SELECT * FROM carts WHERE user_id=? AND product_id=?"
 	rows, err := Db.Query(query, userID, productID)

@@ -2,7 +2,7 @@
 
 # [接口文档(Api docs)](https://g4kfvgyyq7.apifox.cn)
 
-# 1. Project Features (Current Version: `1.5.3Beta`)
+# 1. Project Features (Current Version: `1.5.5Beta`)
 
 This project is similar to an e-commerce website and supports the following features:
 
@@ -17,9 +17,8 @@ This project is similar to an e-commerce website and supports the following feat
 - [x]  Adding products to the shopping cart
 - [x]  Retrieving all products in the shopping cart
 - [x]  Searching for products in the shopping cart
-- [x]  Basic order placement (returns an `order` object to the frontend)
-- [ ]  Advanced order placement (affects product inventory and handles concurrency)
-- [ ]  Ultimate order placement (simulating WeChat/Alipay payment callbacks based on advanced ordering)
+- [x]   Basic order (return an order to the frontend)
+- [ ]  Ultimate order (affect inventory and simulate payment callbacks such as WeChat/Alipay)
 - [x]  Nested comments
 - [x]  Anonymous comments
 - [x]  Browsing history tracking
@@ -30,8 +29,8 @@ This project is similar to an e-commerce website and supports the following feat
 - [x]  Designing a heat algorithm to display frequently viewed product categories on the homepage
 - [ ]  Enabling user-customer service chat (may implement merchant, admin, and user clients using Python if time allows)
 - [ ]  Deploying to a personal server for public access
-- [ ]  Enhancing security (XSS, SQL injection, CSRF, etc.; SQL injection is already prevented by using placeholders in SQL queries)
-- [ ]  Any other features you’d like to add (procrastination mode: ON)
+- [x]   Prevent SQL injection
+- [ ]  Consider more security measures (such as XSS and CSRF)
 
 # 2. Project Structure
 
