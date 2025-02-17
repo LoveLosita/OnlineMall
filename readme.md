@@ -2,7 +2,17 @@
 
 # [接口文档(Api docs)](https://g4kfvgyyq7.apifox.cn)
 
-# 1. Project Features (Current Version: `1.5.5Beta`)
+# 1. Technologies Used
+
+1. `Go` language: The entire project is written in this programming language.
+2. `hertz` framework: The project is built on this framework.
+3. `JWT Token`: Used for user authentication and token generation.
+4. `bcrypt`: Used for encrypting passwords and comparing plain-text and encrypted passwords.
+5. `MySQL`: The database for the project.
+6. Middleware: Used to retrieve content from request headers and write it to the context for further operations.
+7. Some other odds and ends used for testing the project, which I don't remember clearly, so I won't list them here.
+
+# 2. Project Features (Current Version: `1.5.6Beta`)
 
 This project is similar to an e-commerce website and supports the following features:
 
@@ -32,9 +42,9 @@ This project is similar to an e-commerce website and supports the following feat
 - [x]   Prevent SQL injection
 - [ ]  Consider more security measures (such as XSS and CSRF)
 
-# 2. Project Structure
+# 3. Project Structure
 
-## 2.1. File Structure Diagram
+## 3.1. File Structure Diagram
 
 ```go
 OnlineMall
@@ -103,7 +113,7 @@ OnlineMall
 └── readme_zh_cn.md      // Project README file (Simplified Chinese version)
 ```
 
-## 2.2. Directory Details
+## 3.2. Directory Details
 
 1. **api**: Contains API definitions for different functionalities such as user authentication, shopping cart management, product categories, product management, order processing, and reviews. Each file corresponds to a specific module.
 2. **auth**: Handles user authentication logic, primarily focusing on JWT generation and validation to ensure user identity legitimacy.
@@ -120,13 +130,13 @@ OnlineMall
 13. **readme.md**: The project's README file, providing basic information, usage instructions, and technology stack details.
 14. **readme_zh_cn.md**: Simplified Chinese version of the` README` file (which is also the original version).
 
-## 2.3. `MySQL` Table Structure
+## 3.3. `MySQL` Table Structure
 
-### 2.3.1. Structure Diagram
+### 3.3.1. Structure Diagram
 
 ![Structure Diagram](mysql_struct.jpg)
 
-### 2.3.2. Structure Description
+### 3.3.2. Structure Description
 
 1. `users` (User Table)
    - Acts as the core table, storing basic information about users.
@@ -155,7 +165,7 @@ OnlineMall
    - Linked to the `users` table (records the user's browsing history).
    - Linked to the `products` table (stores the products viewed by the user).
 
-### 2.3.3. Structure Summary
+### 3.3.3. Structure Summary
 
 - One-to-Many:
 
@@ -173,7 +183,7 @@ OnlineMall
   - `orders` and `products` have a many-to-many relationship (through `order_items`).
   - `users` and `products` have a many-to-many relationship in `carts` (a user can add multiple products to the cart, and each product can be added to the cart by multiple users).
 
-# 3. Definition of Status Codes
+# 4. Definition of Status Codes
 
 | Status Code | HTTP Status Code | Description                         | Reason                                                       | Solution                                                     |
 | ----------- | ---------------- | ----------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
@@ -211,11 +221,11 @@ OnlineMall
 | 40031       | 404              | No Matching Reviews                 | No reviews matching the search keyword were found when searching for product reviews. | Use a different keyword.                                     |
 | 40032       | 404              | Review Not Found                    | The review ID provided for query or deletion does not exist. | Provide a valid review ID.                                   |
 
-# 4. General Error Response Examples
+# 5. General Error Response Examples
 
 Some errors returned by the project are generic, so I only saved their examples in the `apifox` API documentation during the early stages of the project. Later, I did not keep examples. Here, I list these error examples, and you can refer to the table above for their reasons:
 
-## 4.1. Not Logged In
+## 5.1. Not Logged In
 
 ```json
 {
@@ -224,7 +234,7 @@ Some errors returned by the project are generic, so I only saved their examples 
 }
 ```
 
-## 4.2. Invalid JWT Token Signing Method
+## 5.2. Invalid JWT Token Signing Method
 
 ```json
 {
@@ -233,7 +243,7 @@ Some errors returned by the project are generic, so I only saved their examples 
 }
 ```
 
-## 4.3. Invalid Token / Token Expired
+## 5.3. Invalid Token / Token Expired
 
 ```json
 {
@@ -242,7 +252,7 @@ Some errors returned by the project are generic, so I only saved their examples 
 }
 ```
 
-## 4.4. Invalid Token Claims
+## 5.4. Invalid Token Claims
 
 ```json
 {
@@ -251,7 +261,7 @@ Some errors returned by the project are generic, so I only saved their examples 
 }
 ```
 
-## 4.5. Insufficient Permissions
+## 5.5. Insufficient Permissions
 
 ```json
 {
@@ -260,7 +270,7 @@ Some errors returned by the project are generic, so I only saved their examples 
 }
 ```
 
-## 4.6. Missing Parameters
+## 5.6. Missing Parameters
 
 ```json
 {
@@ -269,7 +279,7 @@ Some errors returned by the project are generic, so I only saved their examples 
 }
 ```
 
-## 4.7. Incorrect Parameter Type
+## 5.7. Incorrect Parameter Type
 
 ```json
 {
@@ -278,7 +288,7 @@ Some errors returned by the project are generic, so I only saved their examples 
 }
 ```
 
-## 4.8. Parameter Too Long
+## 5.8. Parameter Too Long
 
 ```json
 {
@@ -287,9 +297,9 @@ Some errors returned by the project are generic, so I only saved their examples 
 }
 ```
 
-# 5. Using the Project
+# 6. Using the Project
 
-## 5.1. Configure the Database
+## 6.1. Configure the Database
 
 Please create a `mysql` database named `OnlineMall` with the password set to `123456`.
 
@@ -410,7 +420,7 @@ CREATE TABLE `carts` (
 )
 ```
 
-## 5.2. Start the Project
+## 6.2. Start the Project
 
 After deploying the project locally, run the following command in the terminal at the project root directory:
 
