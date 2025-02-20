@@ -9,7 +9,7 @@ import (
 	"github.com/golang-jwt/jwt/v4"
 )
 
-var jwtSecret = auth.JwtSecret
+var accessKey = auth.AccessKey
 
 // JWTTokenAuth 中间件
 func JWTTokenAuth() app.HandlerFunc {
@@ -29,7 +29,7 @@ func JWTTokenAuth() app.HandlerFunc {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, respond.InvalidTokenSingingMethod
 			}
-			return jwtSecret, nil
+			return accessKey, nil
 		})
 		if err != nil || !token.Valid { //token无效
 			c.JSON(consts.StatusUnauthorized, respond.InvalidToken)
@@ -65,7 +65,7 @@ func JWTTokenAuthTokenNotAMust() app.HandlerFunc {
 			if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, respond.InvalidTokenSingingMethod
 			}
-			return jwtSecret, nil
+			return accessKey, nil
 		})
 		if err != nil || !token.Valid { //token无效
 			c.JSON(consts.StatusUnauthorized, respond.InvalidToken)

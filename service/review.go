@@ -5,7 +5,6 @@ import (
 	"OnlineMall/dao"
 	"OnlineMall/model"
 	"OnlineMall/respond"
-	"OnlineMall/utils"
 	"math/rand"
 )
 
@@ -125,8 +124,8 @@ func BuildReviewTree(productID int) ([]model.ShowReview, error) { //构建评论
 		return nil, err
 	}
 	//2.获取所有评论
-	reviews, err := dao.GetAProductReviews(productID) //获取所有评论
-	if len(reviews) == 0 {                            //如果评论为空
+	reviews, err := dao.GetAllReviews()
+	if len(reviews) == 0 { //如果评论为空
 		return nil, respond.EmptyProductReviews
 	}
 	if err != nil {
@@ -148,7 +147,7 @@ func BuildReviewTree(productID int) ([]model.ShowReview, error) { //构建评论
 	}
 	var resultList []model.ShowReview //定义一个评论列表
 	for _, review := range reviews {  //遍历评论
-		if review.ParentID == nil { //如果没有父评论
+		if review.ParentID == nil && review.ProductID == productID { //如果没有父评论且是该商品的评论
 			if review.ISAnonymous {
 				review.UserID = rand.Intn(9000) + 1000 //随机生成一个用户ID,因为是匿名评论
 			}
@@ -158,7 +157,7 @@ func BuildReviewTree(productID int) ([]model.ShowReview, error) { //构建评论
 	return resultList, nil
 }
 
-func BuildReviewTree2(productID int, keyword string, handlerID int) ([]model.ShowReview, error) { //构建评论树
+/*func BuildReviewTree2(productID int, keyword string, handlerID int) ([]model.ShowReview, error) { //构建评论树
 	//1.首先检查权限
 	result, err := auth.CheckPermission(handlerID)
 	if err != nil {
@@ -198,7 +197,7 @@ func BuildReviewTree2(productID int, keyword string, handlerID int) ([]model.Sho
 	}
 	var resultList []model.ShowReview //定义一个评论列表
 	for _, review := range reviews {  //遍历评论
-		if review.ParentID == nil || !utils.InIntSlice(appendSlice, review.ID) { //如果没有父评论或者ID不在appendSlice中
+		if (review.ParentID == nil || !utils.InIntSlice(appendSlice, review.ID)) && review.ProductID == productID { //如果没有父评论或者ID不在appendSlice中
 			if review.ISAnonymous {
 				review.UserID = rand.Intn(9000) + 1000 //随机生成一个用户ID,因为是匿名评论
 			}
@@ -206,7 +205,7 @@ func BuildReviewTree2(productID int, keyword string, handlerID int) ([]model.Sho
 		}
 	}
 	return resultList, nil
-}
+}*/
 
 func DeleteReview(handlerID int, reviewID int) error {
 	//1.检查权限

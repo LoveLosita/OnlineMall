@@ -9,7 +9,7 @@ import (
 
 func RefreshTokenHandler(refreshToken string) (model.Tokens, error) {
 	// 验证刷新令牌
-	token, err := auth.ValidateToken(refreshToken)
+	token, err := auth.ValidateRefreshToken(refreshToken)
 	if err != nil || !token.Valid { // 刷新令牌无效
 		return model.Tokens{}, respond.InvalidRefreshToken
 	}

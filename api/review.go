@@ -88,7 +88,7 @@ func ShowAProductReviews(ctx context.Context, c *app.RequestContext) {
 	c.JSON(consts.StatusOK, respond.Respond(respond.Ok, reviews))
 }
 
-func SearchForAProductReview(ctx context.Context, c *app.RequestContext) {
+/*func SearchForAProductReview(ctx context.Context, c *app.RequestContext) {
 	//1.从请求中获取商品id
 	productID := c.Query("product_id")
 	intProductID, err := strconv.ParseInt(productID, 10, 64)
@@ -117,7 +117,7 @@ func SearchForAProductReview(ctx context.Context, c *app.RequestContext) {
 		}
 	}
 	c.JSON(consts.StatusOK, respond.Respond(respond.Ok, review))
-}
+}*/
 
 func DeleteReview(ctx context.Context, c *app.RequestContext) {
 	//1.从请求中获取评论id

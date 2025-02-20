@@ -58,7 +58,7 @@ func IfReviewExists(parentID int) (bool, error) {
 	}
 }
 
-func GetAProductReviews(productID int) ([]model.ShowReview, error) {
+/*func GetAProductReviews(productID int) ([]model.ShowReview, error) {
 	//1.获取直接属于该商品的评论
 	query := "SELECT * FROM reviews WHERE product_id=?"
 	rows, err := Db.Query(query, productID)
@@ -92,9 +92,28 @@ func GetAProductReviews(productID int) ([]model.ShowReview, error) {
 		reviews = append(reviews, review)
 	}
 	return reviews, nil
+}*/
+
+func GetAllReviews() ([]model.ShowReview, error) {
+	query := "SELECT * FROM reviews"
+	rows, err := Db.Query(query)
+	if err != nil {
+		return nil, err
+	}
+	var reviews []model.ShowReview
+	for rows.Next() {
+		var review model.ShowReview
+		err = rows.Scan(&review.ID, &review.UserID, &review.ProductID, &review.ParentID, &review.Rating,
+			&review.Comment, &review.ISAnonymous, &review.CreatedAt, &review.UpdatedAt)
+		if err != nil {
+			return nil, err
+		}
+		reviews = append(reviews, review)
+	}
+	return reviews, nil
 }
 
-func SearchForProductReviews(productID int, keyword string) ([]model.ShowReview, error) {
+/*func SearchForProductReviews(productID int, keyword string) ([]model.ShowReview, error) {
 	//1.获取直接属于该商品的评论
 	query := "SELECT * FROM reviews WHERE product_id=? AND comment LIKE ?"
 	rows, err := Db.Query(query, productID, "%"+keyword+"%")
@@ -143,7 +162,7 @@ func SearchForProductReviews(productID int, keyword string) ([]model.ShowReview,
 		reviews = append(reviews, review)
 	}
 	return reviews, nil
-}
+}*/
 
 func DeleteReview(reviewID int) error {
 	//1.先删除回复（如果有的话）

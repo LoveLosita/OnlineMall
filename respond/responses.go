@@ -171,13 +171,17 @@ var ( //请求相关的响应
 		Status: "40030",
 		Info:   "product reviews is empty",
 	}
-	CantFindReview = Response{ //找不到评论
+	/*CantFindReview = Response{ //找不到评论
 		Status: "40031",
 		Info:   "can't find review",
-	}
+	}*/
 	ErrReviewNotExists = Response{ //评论不存在
 		Status: "40032",
 		Info:   "review not exists",
+	}
+	WrongTokenType = Response{ //无效令牌类型
+		Status: "40033",
+		Info:   "wrong token type",
 	}
 )
 
